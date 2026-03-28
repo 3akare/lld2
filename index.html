@@ -1,0 +1,2923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DesignCraft — Java Design Patterns & SOLID Principles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08080c;--bg2:#0f0f15;--bg3:#16161f;--bg4:#1e1e28;
+  --amber:#f5a623;--amber2:#fbbf47;--amber3:#7a4f08;
+  --teal:#14b8a6;--teal2:#0d9488;
+  --white:#f5f1e8;--muted:#8a8799;--dim:#4a4860;
+  --border:#252535;--border2:#31314a;
+  --red:#ef4444;--green:#22c55e;--blue:#3b82f6;
+  --font-display:'Syne',sans-serif;
+  --font-body:'DM Sans',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --r:8px;--r2:14px;--r3:20px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:var(--font-body);font-size:16px;line-height:1.7;overflow-x:hidden;}
+h1,h2,h3,h4{font-family:var(--font-display);line-height:1.2;}
+a{color:var(--amber);text-decoration:none;}
+code,pre{font-family:var(--font-mono);}
+button{cursor:pointer;font-family:var(--font-body);}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--dim);border-radius:3px;}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(8,8,12,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:60px;}
+.nav-logo{font-family:var(--font-display);font-size:1.1rem;font-weight:800;color:var(--white);display:flex;align-items:center;gap:8px;}
+.nav-logo span{color:var(--amber);}
+.nav-links{display:flex;gap:2rem;align-items:center;}
+.nav-links a{color:var(--muted);font-size:0.88rem;font-weight:500;transition:color .2s;letter-spacing:.02em;}
+.nav-links a:hover,.nav-links a.active{color:var(--white);}
+.nav-cta{background:var(--amber);color:#08080c;padding:7px 18px;border-radius:6px;font-size:0.85rem;font-weight:700;font-family:var(--font-display);transition:opacity .2s;}
+.nav-cta:hover{opacity:.85;}
+
+/* PAGES */
+.page{display:none;padding-top:60px;}
+.page.active{display:block;}
+
+/* ===== HOME PAGE ===== */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:6rem 2rem 4rem;position:relative;overflow:hidden;}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.3;}
+.hero-glow{position:absolute;top:20%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(245,166,35,.08) 0%,transparent 70%);pointer-events:none;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.3);color:var(--amber);padding:6px 16px;border-radius:100px;font-size:0.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2rem;}
+.hero h1{font-size:clamp(2.8rem,7vw,5.5rem);font-weight:800;line-height:1.05;margin-bottom:1.5rem;max-width:900px;}
+.hero h1 .accent{color:var(--amber);}
+.hero h1 .teal{color:var(--teal);}
+.hero-sub{font-size:1.15rem;color:var(--muted);max-width:580px;margin:0 auto 2.5rem;line-height:1.8;}
+.hero-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:4rem;}
+.btn-primary{background:var(--amber);color:#08080c;padding:14px 32px;border-radius:8px;font-weight:700;font-family:var(--font-display);font-size:1rem;border:none;transition:transform .15s,opacity .15s;display:inline-flex;align-items:center;gap:8px;}
+.btn-primary:hover{transform:translateY(-2px);opacity:.9;}
+.btn-secondary{background:transparent;color:var(--white);padding:14px 32px;border-radius:8px;font-weight:600;font-family:var(--font-display);font-size:1rem;border:1px solid var(--border2);transition:border-color .2s,background .2s;}
+.btn-secondary:hover{border-color:var(--amber);background:rgba(245,166,35,.06);}
+
+.stats-row{display:flex;gap:2px;justify-content:center;flex-wrap:wrap;max-width:800px;margin:0 auto;}
+.stat{background:var(--bg3);border:1px solid var(--border);padding:1.5rem 2rem;flex:1;min-width:150px;text-align:center;}
+.stat:first-child{border-radius:var(--r2) 0 0 var(--r2);}
+.stat:last-child{border-radius:0 var(--r2) var(--r2) 0;}
+.stat-n{font-size:2rem;font-weight:800;font-family:var(--font-display);color:var(--amber);display:block;}
+.stat-l{font-size:0.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
+
+.features{padding:6rem 2rem;max-width:1100px;margin:0 auto;}
+.section-tag{font-size:0.75rem;text-transform:uppercase;letter-spacing:.1em;color:var(--amber);font-weight:700;margin-bottom:.8rem;}
+.section-title{font-size:clamp(1.8rem,4vw,2.8rem);font-weight:800;margin-bottom:1rem;}
+.section-sub{color:var(--muted);font-size:1.05rem;max-width:560px;margin-bottom:3rem;line-height:1.8;}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:var(--border);}
+.feature-card{background:var(--bg2);padding:2rem;transition:background .2s;}
+.feature-card:hover{background:var(--bg3);}
+.feature-icon{width:44px;height:44px;background:rgba(245,166,35,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:1.2rem;font-size:1.3rem;}
+.feature-card h3{font-size:1.05rem;font-weight:700;margin-bottom:.5rem;}
+.feature-card p{color:var(--muted);font-size:0.9rem;line-height:1.7;}
+
+.curriculum-preview{padding:6rem 2rem;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.curriculum-preview-inner{max-width:1100px;margin:0 auto;}
+.modules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-top:2.5rem;}
+.module-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:1.5rem;cursor:pointer;transition:border-color .2s,transform .15s;position:relative;overflow:hidden;}
+.module-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--amber);opacity:0;transition:opacity .2s;}
+.module-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.module-card:hover::before{opacity:1;}
+.module-num{font-size:0.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.5rem;}
+.module-card h3{font-size:1rem;font-weight:700;margin-bottom:.5rem;}
+.module-card p{font-size:0.83rem;color:var(--muted);line-height:1.6;}
+.module-count{font-size:0.75rem;color:var(--amber);margin-top:1rem;display:flex;align-items:center;gap:4px;}
+
+/* ===== CURRICULUM PAGE ===== */
+.curriculum-page{padding:5rem 2rem 4rem;max-width:1100px;margin:0 auto;}
+.page-header{margin-bottom:3rem;}
+.page-header h1{font-size:clamp(2rem,5vw,3rem);font-weight:800;margin-bottom:.5rem;}
+.page-header p{color:var(--muted);font-size:1rem;}
+.progress-bar-wrap{background:var(--bg3);border-radius:100px;height:6px;margin-top:1.5rem;max-width:400px;}
+.progress-bar{background:var(--amber);height:100%;border-radius:100px;transition:width .5s;}
+.progress-label{font-size:0.8rem;color:var(--muted);margin-top:.5rem;}
+.module-section{margin-bottom:3rem;}
+.module-section-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem;}
+.module-section-header h2{font-size:1.2rem;font-weight:700;}
+.cat-badge{font-size:0.7rem;text-transform:uppercase;letter-spacing:.08em;padding:3px 10px;border-radius:100px;font-weight:700;}
+.cat-solid{background:rgba(20,184,166,.15);color:var(--teal);}
+.cat-creational{background:rgba(245,166,35,.15);color:var(--amber);}
+.cat-structural{background:rgba(59,130,246,.15);color:#60a5fa;}
+.cat-behavioral{background:rgba(168,85,247,.15);color:#c084fc;}
+.lessons-list{display:flex;flex-direction:column;gap:.5rem;}
+.lesson-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;display:flex;align-items:center;gap:1rem;cursor:pointer;transition:border-color .2s,background .2s;}
+.lesson-item:hover{border-color:var(--border2);background:var(--bg3);}
+.lesson-item.done{border-left:3px solid var(--green);}
+.lesson-check{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;transition:.2s;}
+.lesson-check.checked{background:var(--green);border-color:var(--green);color:#08080c;}
+.lesson-info{flex:1;}
+.lesson-title{font-size:0.92rem;font-weight:600;color:var(--white);}
+.lesson-meta{font-size:0.77rem;color:var(--muted);margin-top:2px;}
+.lesson-tags{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.3rem;}
+.tag{font-size:0.67rem;padding:2px 7px;border-radius:4px;background:var(--bg4);border:1px solid var(--border);color:var(--muted);}
+.lesson-arrow{color:var(--muted);font-size:0.9rem;}
+
+/* ===== LESSON PAGE ===== */
+.lesson-layout{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 60px);}
+.lesson-sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:1.5rem;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto;}
+.lesson-sidebar h3{font-size:0.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:1rem;font-weight:700;}
+.sidebar-nav{display:flex;flex-direction:column;gap:2px;}
+.sidebar-nav a{font-size:0.85rem;color:var(--muted);padding:6px 10px;border-radius:6px;transition:color .15s,background .15s;}
+.sidebar-nav a:hover,.sidebar-nav a.active{color:var(--white);background:var(--bg3);}
+.lesson-content{padding:3rem 3rem 6rem;max-width:800px;}
+.lesson-content h1{font-size:2.2rem;font-weight:800;margin-bottom:.5rem;}
+.lesson-meta-row{display:flex;gap:1rem;align-items:center;margin-bottom:2.5rem;flex-wrap:wrap;}
+.difficulty{font-size:0.75rem;text-transform:uppercase;letter-spacing:.06em;padding:3px 10px;border-radius:100px;font-weight:700;}
+.diff-beginner{background:rgba(34,197,94,.15);color:#4ade80;}
+.diff-intermediate{background:rgba(245,166,35,.15);color:var(--amber);}
+.diff-advanced{background:rgba(239,68,68,.15);color:#f87171;}
+.time-badge{font-size:0.8rem;color:var(--muted);}
+
+.content-block{margin-bottom:2.5rem;}
+.content-block h2{font-size:1.35rem;font-weight:700;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.6rem;}
+.content-block h2 .icon{width:28px;height:28px;background:rgba(245,166,35,.1);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
+.content-block h3{font-size:1.05rem;font-weight:600;margin:1.5rem 0 .6rem;color:var(--amber);}
+.content-block p{color:#c8c4d8;line-height:1.85;margin-bottom:1rem;}
+.content-block ul,.content-block ol{color:#c8c4d8;line-height:1.85;padding-left:1.5rem;margin-bottom:1rem;}
+.content-block li{margin-bottom:.3rem;}
+
+.analogy-box{background:rgba(20,184,166,.07);border:1px solid rgba(20,184,166,.25);border-radius:var(--r2);padding:1.2rem 1.5rem;margin:1rem 0;}
+.analogy-box strong{color:var(--teal);}
+.warn-box{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.25);border-radius:var(--r2);padding:1.2rem 1.5rem;margin:1rem 0;}
+.warn-box strong{color:#f87171;}
+.info-box{background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.25);border-radius:var(--r2);padding:1.2rem 1.5rem;margin:1rem 0;}
+.info-box strong{color:#60a5fa;}
+.tip-box{background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.25);border-radius:var(--r2);padding:1.2rem 1.5rem;margin:1rem 0;}
+.tip-box strong{color:var(--amber);}
+
+/* CODE BLOCKS */
+.code-wrap{background:#0a0a10;border:1px solid var(--border2);border-radius:var(--r2);overflow:hidden;margin:1rem 0;}
+.code-header{background:var(--bg3);border-bottom:1px solid var(--border);padding:.5rem 1rem;display:flex;align-items:center;justify-content:space-between;}
+.code-lang{font-size:0.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;}
+.copy-btn{font-size:0.75rem;color:var(--muted);background:none;border:none;cursor:pointer;transition:color .15s;font-family:var(--font-body);}
+.copy-btn:hover{color:var(--amber);}
+pre{padding:1.5rem;overflow-x:auto;font-size:0.85rem;line-height:1.7;}
+.kw{color:#c084fc;} /* keywords */
+.cl{color:#60a5fa;} /* class names */
+.fn{color:var(--amber);} /* functions */
+.st{color:#4ade80;} /* strings */
+.cm{color:var(--dim);font-style:italic;} /* comments */
+.nn{color:#f87171;} /* numbers */
+.an{color:var(--teal);} /* annotations */
+
+.mental-model{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:1.5rem;margin:1rem 0;}
+.mental-model h4{font-size:0.8rem;text-transform:uppercase;letter-spacing:.08em;color:var(--amber);margin-bottom:.8rem;font-weight:700;}
+
+.exercise-block{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);margin:.8rem 0;overflow:hidden;}
+.exercise-header{padding:.8rem 1.2rem;background:var(--bg3);border-bottom:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:space-between;}
+.exercise-header span{font-size:0.85rem;font-weight:600;}
+.exercise-body{padding:1.2rem;display:none;}
+.exercise-body.open{display:block;}
+.exercise-body p{color:#c8c4d8;font-size:0.92rem;}
+.ex-diff{font-size:0.7rem;padding:2px 8px;border-radius:100px;font-weight:700;}
+
+.next-lesson{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:1.5rem;display:flex;align-items:center;justify-content:space-between;margin-top:2rem;cursor:pointer;transition:border-color .2s;}
+.next-lesson:hover{border-color:var(--amber);}
+.next-label{font-size:0.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.2rem;}
+.next-title{font-size:1rem;font-weight:700;}
+.next-arrow{font-size:1.5rem;color:var(--amber);}
+
+.mark-done-btn{background:transparent;border:1.5px solid var(--border2);color:var(--muted);padding:10px 22px;border-radius:8px;font-size:0.88rem;font-weight:600;transition:.2s;display:flex;align-items:center;gap:6px;}
+.mark-done-btn:hover{border-color:var(--green);color:var(--green);}
+.mark-done-btn.done{background:rgba(34,197,94,.1);border-color:var(--green);color:var(--green);}
+
+/* ===== QUIZ PAGE ===== */
+.quiz-page{padding:5rem 2rem 4rem;max-width:720px;margin:0 auto;}
+.quiz-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:2rem;margin-bottom:1rem;}
+.quiz-q-num{font-size:0.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--amber);margin-bottom:.5rem;font-weight:700;}
+.quiz-q{font-size:1.05rem;font-weight:600;margin-bottom:1.5rem;line-height:1.6;}
+.quiz-options{display:flex;flex-direction:column;gap:.5rem;}
+.quiz-opt{background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--r);padding:.9rem 1.2rem;cursor:pointer;font-size:0.9rem;text-align:left;color:var(--white);transition:.15s;display:flex;align-items:center;gap:.8rem;}
+.quiz-opt:hover{border-color:var(--border2);background:var(--bg4);}
+.quiz-opt.selected{border-color:var(--amber);background:rgba(245,166,35,.08);}
+.quiz-opt.correct{border-color:var(--green);background:rgba(34,197,94,.08);color:#4ade80;}
+.quiz-opt.wrong{border-color:var(--red);background:rgba(239,68,68,.08);color:#f87171;}
+.quiz-opt-letter{width:26px;height:26px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;flex-shrink:0;opacity:.6;}
+.quiz-explanation{margin-top:1rem;padding:1rem 1.2rem;background:rgba(20,184,166,.07);border:1px solid rgba(20,184,166,.2);border-radius:var(--r);font-size:0.88rem;color:#a7f3d0;display:none;}
+.quiz-explanation.show{display:block;}
+.quiz-nav{display:flex;gap:.8rem;justify-content:flex-end;margin-top:1.2rem;}
+.quiz-score{background:var(--bg2);border:2px solid var(--amber);border-radius:var(--r3);padding:3rem;text-align:center;display:none;}
+.quiz-score.show{display:block;}
+.score-num{font-size:4rem;font-weight:800;font-family:var(--font-display);color:var(--amber);}
+.score-label{color:var(--muted);margin-top:.5rem;}
+.quiz-progress-row{display:flex;gap:.4rem;margin-bottom:1.5rem;}
+.qp-dot{width:8px;height:8px;border-radius:50%;background:var(--border2);transition:.2s;}
+.qp-dot.done{background:var(--amber);}
+.qp-dot.current{background:var(--white);}
+
+/* ===== CHEAT SHEET PAGE ===== */
+.cheat-page{padding:5rem 2rem 4rem;max-width:1000px;margin:0 auto;}
+.pattern-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-top:1.5rem;}
+.pattern-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:1.2rem;transition:border-color .2s;}
+.pattern-card:hover{border-color:var(--border2);}
+.pattern-card h3{font-size:.95rem;font-weight:700;margin-bottom:.3rem;display:flex;align-items:center;gap:.5rem;}
+.pattern-card p{font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:.8rem;}
+.pattern-use{font-size:0.78rem;color:var(--teal);background:rgba(20,184,166,.08);border:1px solid rgba(20,184,166,.15);border-radius:5px;padding:3px 8px;display:inline-block;}
+
+/* FILTER TABS */
+.filter-tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:2rem;}
+.filter-tab{background:transparent;border:1px solid var(--border);border-radius:100px;padding:5px 14px;font-size:.8rem;font-weight:600;color:var(--muted);transition:.15s;cursor:pointer;}
+.filter-tab:hover,.filter-tab.active{border-color:var(--amber);color:var(--amber);background:rgba(245,166,35,.07);}
+
+/* FOOTER */
+.site-footer{background:var(--bg2);border-top:1px solid var(--border);padding:2rem;text-align:center;color:var(--muted);font-size:0.82rem;}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.fade-up{animation:fadeUp .5s ease both;}
+.fade-up-1{animation-delay:.1s;}
+.fade-up-2{animation-delay:.2s;}
+.fade-up-3{animation-delay:.3s;}
+
+@media(max-width:900px){
+  .lesson-layout{grid-template-columns:1fr;}
+  .lesson-sidebar{display:none;}
+  .lesson-content{padding:2rem 1.5rem 4rem;}
+  .hero h1{font-size:2.5rem;}
+}
+@media(max-width:600px){
+  .nav-links{display:none;}
+  .stats-row{flex-direction:column;}
+  .stat{border-radius:var(--r) !important;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">⬡ Design<span>Craft</span></div>
+  <div class="nav-links">
+    <a href="#" onclick="showPage('home')" id="nav-home" class="active">Home</a>
+    <a href="#" onclick="showPage('curriculum')" id="nav-curriculum">Curriculum</a>
+    <a href="#" onclick="showPage('quiz')" id="nav-quiz">Quiz</a>
+    <a href="#" onclick="showPage('cheatsheet')" id="nav-cheatsheet">Cheat Sheet</a>
+  </div>
+  <button class="nav-cta" onclick="showPage('curriculum')">Start Learning →</button>
+</nav>
+
+<!-- ===== HOME ===== -->
+<div id="page-home" class="page active">
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-badge">⬡ Java Design Patterns & SOLID Principles</div>
+    <h1 class="fade-up">Master <span class="accent">Design Patterns</span><br>Think Like a <span class="teal">Senior Engineer</span></h1>
+    <p class="hero-sub fade-up fade-up-1">From SOLID principles to the 23 GoF patterns — taught from first principles, production examples, and real interview insight. Top 10% in 90 days.</p>
+    <div class="hero-actions fade-up fade-up-2">
+      <button class="btn-primary" onclick="showPage('curriculum')">Start the Curriculum ↗</button>
+      <button class="btn-secondary" onclick="showPage('quiz')">Test Your Knowledge</button>
+    </div>
+    <div class="stats-row fade-up fade-up-3">
+      <div class="stat"><span class="stat-n">30+</span><span class="stat-l">Lessons</span></div>
+      <div class="stat"><span class="stat-n">23</span><span class="stat-l">GoF Patterns</span></div>
+      <div class="stat"><span class="stat-n">5</span><span class="stat-l">SOLID Principles</span></div>
+      <div class="stat"><span class="stat-n">100+</span><span class="stat-l">Code Examples</span></div>
+      <div class="stat"><span class="stat-n">60+</span><span class="stat-l">Quiz Questions</span></div>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="section-tag">Why this course</div>
+    <h2 class="section-title">Engineered for the top 10%</h2>
+    <p class="section-sub">Every lesson follows the mental model of a senior engineer mentoring a junior — no fluff, pure depth.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🧠</div>
+        <h3>First-Principles Teaching</h3>
+        <p>Don't memorize patterns — understand the problem each one solves. Build the mental model that generates the solution.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚙️</div>
+        <h3>Production Code Quality</h3>
+        <p>Every code example is idiomatic, modern Java (17+). No toy examples — we use real-world systems like Spring, logging frameworks, and UI toolkits.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Interview Focused</h3>
+        <p>Each lesson ends with exactly how that pattern appears in system design and coding interviews at FAANG and top-tier companies.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Progressive Complexity</h3>
+        <p>From zero to architect. Concepts build on each other. Each lesson explicitly links forward and backward in the curriculum.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔬</div>
+        <h3>Pitfalls & Edge Cases</h3>
+        <p>Most courses show you the happy path. We show you where patterns break, when NOT to use them, and what senior engineers watch for.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📐</div>
+        <h3>System Design Bridge</h3>
+        <p>Connect low-level patterns to high-level architecture. See how Facade powers microservice APIs, how Observer powers event-driven systems.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="curriculum-preview">
+    <div class="curriculum-preview-inner">
+      <div class="section-tag">Curriculum</div>
+      <h2 class="section-title">4 Modules. One Clear Path.</h2>
+      <p class="section-sub">Structured like a university course, taught like a mentorship. Click any module to dive in.</p>
+      <div class="modules-grid">
+        <div class="module-card" onclick="showPage('curriculum')">
+          <div class="module-num">Module 01</div>
+          <h3>SOLID Principles</h3>
+          <p>The 5 principles every OOP developer must internalize before touching a design pattern.</p>
+          <div class="module-count">● 5 lessons</div>
+        </div>
+        <div class="module-card" onclick="showPage('curriculum')">
+          <div class="module-num">Module 02</div>
+          <h3>Creational Patterns</h3>
+          <p>Control how objects are created — from Singleton to Builder, Prototype to Abstract Factory.</p>
+          <div class="module-count">● 5 lessons</div>
+        </div>
+        <div class="module-card" onclick="showPage('curriculum')">
+          <div class="module-num">Module 03</div>
+          <h3>Structural Patterns</h3>
+          <p>Compose objects and classes into larger structures — Adapter, Decorator, Proxy, and more.</p>
+          <div class="module-count">● 7 lessons</div>
+        </div>
+        <div class="module-card" onclick="showPage('curriculum')">
+          <div class="module-num">Module 04</div>
+          <h3>Behavioral Patterns</h3>
+          <p>Define how objects communicate and collaborate — Observer, Strategy, Command, and 7 more.</p>
+          <div class="module-count">● 10 lessons</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <p>⬡ DesignCraft — Java Low Level Design Mastery · Built for top 10% engineers</p>
+  </footer>
+</div>
+
+<!-- ===== CURRICULUM PAGE ===== -->
+<div id="page-curriculum" class="page">
+  <div class="curriculum-page">
+    <div class="page-header">
+      <div class="section-tag">Learning Path</div>
+      <h1>Complete Curriculum</h1>
+      <p>30 lessons across 4 modules — follow in order for maximum comprehension.</p>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="main-progress" style="width:0%"></div>
+      </div>
+      <div class="progress-label" id="progress-text">0 of 27 lessons completed</div>
+    </div>
+
+    <!-- MODULE 1: SOLID -->
+    <div class="module-section">
+      <div class="module-section-header">
+        <h2>Module 01 · SOLID Principles</h2>
+        <span class="cat-badge cat-solid">Foundation</span>
+      </div>
+      <div class="lessons-list" id="solid-lessons"></div>
+    </div>
+
+    <!-- MODULE 2: Creational -->
+    <div class="module-section">
+      <div class="module-section-header">
+        <h2>Module 02 · Creational Patterns</h2>
+        <span class="cat-badge cat-creational">Creational</span>
+      </div>
+      <div class="lessons-list" id="creational-lessons"></div>
+    </div>
+
+    <!-- MODULE 3: Structural -->
+    <div class="module-section">
+      <div class="module-section-header">
+        <h2>Module 03 · Structural Patterns</h2>
+        <span class="cat-badge cat-structural">Structural</span>
+      </div>
+      <div class="lessons-list" id="structural-lessons"></div>
+    </div>
+
+    <!-- MODULE 4: Behavioral -->
+    <div class="module-section">
+      <div class="module-section-header">
+        <h2>Module 04 · Behavioral Patterns</h2>
+        <span class="cat-badge cat-behavioral">Behavioral</span>
+      </div>
+      <div class="lessons-list" id="behavioral-lessons"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LESSON PAGE ===== -->
+<div id="page-lesson" class="page">
+  <div class="lesson-layout">
+    <aside class="lesson-sidebar">
+      <h3>In this lesson</h3>
+      <nav class="sidebar-nav" id="lesson-sidebar-nav"></nav>
+      <div style="margin-top:2rem;padding-top:2rem;border-top:1px solid var(--border);">
+        <h3>Quick Actions</h3>
+        <button class="mark-done-btn" id="mark-done-btn" onclick="toggleDone()" style="width:100%;justify-content:center;margin-top:.5rem;">
+          ✓ Mark Complete
+        </button>
+        <button class="btn-secondary" style="width:100%;margin-top:.5rem;padding:9px 16px;font-size:.82rem;border-radius:6px;" onclick="showPage('curriculum')">
+          ← Back to Curriculum
+        </button>
+      </div>
+    </aside>
+    <div class="lesson-content" id="lesson-content-area"></div>
+  </div>
+</div>
+
+<!-- ===== QUIZ PAGE ===== -->
+<div id="page-quiz" class="page">
+  <div class="quiz-page">
+    <div class="page-header">
+      <div class="section-tag">Knowledge Check</div>
+      <h1>Design Patterns Quiz</h1>
+      <p>Test your understanding across all modules. 20 questions, instant feedback.</p>
+    </div>
+
+    <div style="display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap;" id="quiz-cat-filter">
+      <button class="filter-tab active" onclick="loadQuiz('all',this)">All Topics</button>
+      <button class="filter-tab" onclick="loadQuiz('solid',this)">SOLID</button>
+      <button class="filter-tab" onclick="loadQuiz('creational',this)">Creational</button>
+      <button class="filter-tab" onclick="loadQuiz('structural',this)">Structural</button>
+      <button class="filter-tab" onclick="loadQuiz('behavioral',this)">Behavioral</button>
+    </div>
+
+    <div class="quiz-progress-row" id="quiz-progress-dots"></div>
+
+    <div id="quiz-container"></div>
+    <div class="quiz-score" id="quiz-score">
+      <div style="font-size:3rem;margin-bottom:1rem;">🎯</div>
+      <div class="score-num" id="score-display">0/20</div>
+      <div class="score-label" id="score-msg"></div>
+      <button class="btn-primary" style="margin-top:2rem;" onclick="restartQuiz()">Try Again</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CHEAT SHEET PAGE ===== -->
+<div id="page-cheatsheet" class="page">
+  <div class="cheat-page">
+    <div class="page-header">
+      <div class="section-tag">Quick Reference</div>
+      <h1>Pattern Cheat Sheet</h1>
+      <p>Every pattern at a glance. Use this during system design interviews.</p>
+    </div>
+    <div class="filter-tabs" id="cheat-filter"></div>
+    <div class="pattern-grid" id="cheat-grid"></div>
+  </div>
+</div>
+
+<script>
+// =============================================
+// DATA
+// =============================================
+const CURRICULUM = {
+  solid:[
+    {id:'srp',title:'Single Responsibility Principle',meta:'10 min · Beginner',tags:['SOLID','SRP','OOP'],lesson:'srp'},
+    {id:'ocp',title:'Open / Closed Principle',meta:'12 min · Beginner',tags:['SOLID','OCP','Extension'],lesson:'ocp'},
+    {id:'lsp',title:'Liskov Substitution Principle',meta:'15 min · Intermediate',tags:['SOLID','LSP','Inheritance'],lesson:'lsp'},
+    {id:'isp',title:'Interface Segregation Principle',meta:'10 min · Beginner',tags:['SOLID','ISP','Interfaces'],lesson:'isp'},
+    {id:'dip',title:'Dependency Inversion Principle',meta:'15 min · Intermediate',tags:['SOLID','DIP','DI','IoC'],lesson:'dip'},
+  ],
+  creational:[
+    {id:'singleton',title:'Singleton Pattern',meta:'12 min · Beginner',tags:['Creational','Instance','Thread-safety'],lesson:'singleton'},
+    {id:'factory',title:'Factory Method Pattern',meta:'15 min · Intermediate',tags:['Creational','Factory','Polymorphism'],lesson:'factory'},
+    {id:'abstract-factory',title:'Abstract Factory Pattern',meta:'18 min · Intermediate',tags:['Creational','Families','Abstraction'],lesson:'abstract-factory'},
+    {id:'builder',title:'Builder Pattern',meta:'15 min · Intermediate',tags:['Creational','Fluent API','Complex Objects'],lesson:'builder'},
+    {id:'prototype',title:'Prototype Pattern',meta:'12 min · Intermediate',tags:['Creational','Clone','Deep Copy'],lesson:'prototype'},
+  ],
+  structural:[
+    {id:'adapter',title:'Adapter Pattern',meta:'12 min · Beginner',tags:['Structural','Compatibility','Wrapper'],lesson:'adapter'},
+    {id:'bridge',title:'Bridge Pattern',meta:'18 min · Advanced',tags:['Structural','Abstraction','Implementation'],lesson:'bridge'},
+    {id:'composite',title:'Composite Pattern',meta:'15 min · Intermediate',tags:['Structural','Tree','Recursive'],lesson:'composite'},
+    {id:'decorator',title:'Decorator Pattern',meta:'15 min · Intermediate',tags:['Structural','Wrapper','Dynamic'],lesson:'decorator'},
+    {id:'facade',title:'Facade Pattern',meta:'12 min · Beginner',tags:['Structural','Simplify','Subsystem'],lesson:'facade'},
+    {id:'flyweight',title:'Flyweight Pattern',meta:'18 min · Advanced',tags:['Structural','Memory','Shared State'],lesson:'flyweight'},
+    {id:'proxy',title:'Proxy Pattern',meta:'15 min · Intermediate',tags:['Structural','Surrogate','Lazy Loading'],lesson:'proxy'},
+  ],
+  behavioral:[
+    {id:'observer',title:'Observer Pattern',meta:'15 min · Intermediate',tags:['Behavioral','Events','Pub-Sub'],lesson:'observer'},
+    {id:'strategy',title:'Strategy Pattern',meta:'12 min · Beginner',tags:['Behavioral','Algorithm','Interchangeable'],lesson:'strategy'},
+    {id:'command',title:'Command Pattern',meta:'15 min · Intermediate',tags:['Behavioral','Encapsulate','Undo'],lesson:'command'},
+    {id:'template',title:'Template Method Pattern',meta:'12 min · Beginner',tags:['Behavioral','Skeleton','Override'],lesson:'template'},
+    {id:'iterator',title:'Iterator Pattern',meta:'12 min · Beginner',tags:['Behavioral','Traversal','Collection'],lesson:'iterator'},
+    {id:'state',title:'State Pattern',meta:'18 min · Advanced',tags:['Behavioral','FSM','State Machine'],lesson:'state'},
+    {id:'chain',title:'Chain of Responsibility',meta:'15 min · Intermediate',tags:['Behavioral','Pipeline','Middleware'],lesson:'chain'},
+    {id:'mediator',title:'Mediator Pattern',meta:'15 min · Intermediate',tags:['Behavioral','Decouple','Hub'],lesson:'mediator'},
+    {id:'memento',title:'Memento Pattern',meta:'12 min · Intermediate',tags:['Behavioral','Undo','Snapshot'],lesson:'memento'},
+    {id:'visitor',title:'Visitor Pattern',meta:'20 min · Advanced',tags:['Behavioral','Double Dispatch','Operations'],lesson:'visitor'},
+  ]
+};
+
+const ALL_LESSONS = [
+  ...CURRICULUM.solid,
+  ...CURRICULUM.creational,
+  ...CURRICULUM.structural,
+  ...CURRICULUM.behavioral
+];
+
+const CHEAT_DATA = [
+  {cat:'solid',name:'SRP',full:'Single Responsibility',intent:'A class should have only one reason to change.',use:'When a class does too many unrelated things — split it.',icon:'S'},
+  {cat:'solid',name:'OCP',full:'Open/Closed',intent:'Open for extension, closed for modification.',use:'Add new behavior by extending, not editing existing code.',icon:'O'},
+  {cat:'solid',name:'LSP',full:'Liskov Substitution',intent:'Subtypes must be substitutable for their base types.',use:'When using inheritance — ensure behavior contracts hold.',icon:'L'},
+  {cat:'solid',name:'ISP',full:'Interface Segregation',intent:'Clients should not depend on interfaces they don\'t use.',use:'When an interface has grown too fat — split it into focused ones.',icon:'I'},
+  {cat:'solid',name:'DIP',full:'Dependency Inversion',intent:'Depend on abstractions, not concretions.',use:'Decouple high-level modules from low-level implementations.',icon:'D'},
+  {cat:'creational',name:'Singleton',full:'Singleton',intent:'Ensures only one instance of a class exists.',use:'Config, logging, connection pools, caches.',icon:'①'},
+  {cat:'creational',name:'Factory Method',full:'Factory Method',intent:'Let subclasses decide which class to instantiate.',use:'When creation logic varies by context/type.',icon:'🏭'},
+  {cat:'creational',name:'Abstract Factory',full:'Abstract Factory',intent:'Create families of related objects without specifying classes.',use:'Cross-platform UI toolkits, database drivers.',icon:'🏗'},
+  {cat:'creational',name:'Builder',full:'Builder',intent:'Separate construction from representation.',use:'Complex objects with many optional parameters (HTTP requests, SQL queries).',icon:'🔨'},
+  {cat:'creational',name:'Prototype',full:'Prototype',intent:'Clone objects instead of creating from scratch.',use:'Expensive-to-create objects, game entities, config templates.',icon:'⎘'},
+  {cat:'structural',name:'Adapter',full:'Adapter',intent:'Converts an interface into one a client expects.',use:'Integrating legacy systems, third-party libraries.',icon:'🔌'},
+  {cat:'structural',name:'Bridge',full:'Bridge',intent:'Separates abstraction from implementation.',use:'When abstraction and implementation both need to vary independently.',icon:'🌉'},
+  {cat:'structural',name:'Composite',full:'Composite',intent:'Treat individual objects and compositions uniformly.',use:'File systems, UI component trees, organizational hierarchies.',icon:'🌲'},
+  {cat:'structural',name:'Decorator',full:'Decorator',intent:'Attach new behaviors to objects dynamically.',use:'Java I/O streams, middleware pipelines, adding features without subclassing.',icon:'🎁'},
+  {cat:'structural',name:'Facade',full:'Facade',intent:'Provides a simplified interface to a subsystem.',use:'Microservice API gateways, library wrappers, compiler front-ends.',icon:'🏛'},
+  {cat:'structural',name:'Flyweight',full:'Flyweight',intent:'Share state across many fine-grained objects.',use:'Text rendering (characters), game sprites, connection pooling.',icon:'🪶'},
+  {cat:'structural',name:'Proxy',full:'Proxy',intent:'Provides a surrogate to control access to an object.',use:'Lazy loading, access control, caching, remote proxies (RMI).',icon:'🔍'},
+  {cat:'behavioral',name:'Observer',full:'Observer',intent:'When one changes, many are notified automatically.',use:'Event systems, MVC, reactive streams, pub-sub.',icon:'👁'},
+  {cat:'behavioral',name:'Strategy',full:'Strategy',intent:'Define a family of algorithms and make them interchangeable.',use:'Sorting, payment processing, routing, compression.',icon:'♟'},
+  {cat:'behavioral',name:'Command',full:'Command',intent:'Encapsulate a request as an object.',use:'Undo/redo, job queues, macro recording, transactions.',icon:'📋'},
+  {cat:'behavioral',name:'Template Method',full:'Template Method',intent:'Define the skeleton of an algorithm; subclasses fill in steps.',use:'Data parsing pipelines, game loops, report generation.',icon:'📄'},
+  {cat:'behavioral',name:'Iterator',full:'Iterator',intent:'Sequentially access elements without exposing internals.',use:'Custom collections, database result sets, tree traversal.',icon:'🔄'},
+  {cat:'behavioral',name:'State',full:'State',intent:'Allow an object to alter its behavior when its state changes.',use:'Order lifecycle, vending machines, TCP connections, UI modes.',icon:'🔀'},
+  {cat:'behavioral',name:'Chain of Responsibility',full:'Chain of Responsibility',intent:'Pass a request along a chain of handlers.',use:'HTTP middleware, logging handlers, event bubbling.',icon:'⛓'},
+  {cat:'behavioral',name:'Mediator',full:'Mediator',intent:'Define an object that encapsulates how objects interact.',use:'Chat rooms, air traffic control, GUI dialogs.',icon:'📡'},
+  {cat:'behavioral',name:'Memento',full:'Memento',intent:'Capture and restore object state without breaking encapsulation.',use:'Undo/redo, browser back, game saves, editor history.',icon:'💾'},
+  {cat:'behavioral',name:'Visitor',full:'Visitor',intent:'Separate algorithm from the object structure it operates on.',use:'Compilers (AST walking), DOM manipulation, report rendering.',icon:'🚶'},
+];
+
+const QUIZ_QUESTIONS = [
+  // SOLID
+  {cat:'solid',q:'Which SOLID principle states that a class should have only one reason to change?',opts:['Open/Closed Principle','Single Responsibility Principle','Liskov Substitution Principle','Interface Segregation Principle'],ans:1,exp:'SRP: every class should have exactly one reason to change — meaning one job. If a class handles persistence AND business logic, changes to either domain force changes to the class.'},
+  {cat:'solid',q:'You have a Shape base class. A Square subclass overrides setWidth() to also set height. Which SOLID principle does this violate?',opts:['SRP','OCP','LSP','DIP'],ans:2,exp:'LSP violation: substituting Square for Rectangle breaks the expected behavior — setting width independently of height. Behavioral contracts must hold for subtypes.'},
+  {cat:'solid',q:'The Open/Closed Principle says code should be:',opts:['Open to modification, closed to extension','Closed to extension, open to modification','Open to extension, closed to modification','Open to both extension and modification'],ans:2,exp:'OCP: add new behavior by adding new code (extension), not by editing existing tested code. This is typically achieved via abstractions, interfaces, and polymorphism.'},
+  {cat:'solid',q:'A "Fat Interface" problem is addressed by which principle?',opts:['SRP','LSP','ISP','DIP'],ans:2,exp:'ISP: Interface Segregation — clients should not be forced to depend on methods they do not use. Split large interfaces into smaller, focused ones.'},
+  {cat:'solid',q:'Dependency Injection frameworks (Spring, Guice) primarily implement which principle?',opts:['SRP','OCP','ISP','DIP'],ans:3,exp:'DIP: Dependency Inversion. High-level modules should depend on abstractions (interfaces), not concrete classes. DI containers wire concrete implementations at runtime.'},
+  // Creational
+  {cat:'creational',q:'In a multithreaded Java app, the safest way to implement Singleton is:',opts:['Eager initialization in static field','Double-checked locking','Synchronized getInstance() method','Static inner class (Holder) pattern'],ans:3,exp:'Static inner class (Initialization-on-demand holder) is thread-safe, lazy, and has no synchronization overhead. The inner class is only loaded when getInstance() is called.'},
+  {cat:'creational',q:'The Builder pattern primarily solves which problem?',opts:['Ensuring only one instance exists','Constructing complex objects step by step','Cloning expensive objects','Creating families of related objects'],ans:1,exp:'Builder: separates the construction of a complex object from its representation. Especially useful when many optional parameters exist — avoids telescoping constructors.'},
+  {cat:'creational',q:'Java\'s clone() method implements which pattern?',opts:['Factory Method','Abstract Factory','Prototype','Builder'],ans:2,exp:'Prototype: instead of new MyObject(), you clone an existing prototype. Java\'s Cloneable + clone() is the canonical implementation.'},
+  {cat:'creational',q:'Abstract Factory differs from Factory Method in that it:',opts:['Creates single objects vs families of objects','Uses inheritance vs composition','Is for runtime vs compile-time','Has no abstract methods'],ans:0,exp:'Abstract Factory creates families of related objects. Factory Method creates one type of object and delegates to subclasses. Abstract Factory is a higher-level abstraction.'},
+  {cat:'creational',q:'Which real-world Spring Boot class is a classic Factory?',opts:['@Autowired','BeanFactory / ApplicationContext','@Repository','@Transactional'],ans:1,exp:'Spring\'s BeanFactory / ApplicationContext is a concrete implementation of the Factory pattern — it instantiates and manages beans by type or name.'},
+  // Structural
+  {cat:'structural',q:'Java\'s BufferedReader wrapping FileReader is an example of which pattern?',opts:['Adapter','Decorator','Facade','Proxy'],ans:1,exp:'Decorator: BufferedReader wraps FileReader and adds buffering behavior without changing the FileReader interface. Java I/O is the canonical Decorator example.'},
+  {cat:'structural',q:'An API Gateway in microservices architecture exemplifies:',opts:['Proxy','Adapter','Facade','Bridge'],ans:2,exp:'Facade: the API gateway provides a single simplified interface to a complex system of backend microservices.'},
+  {cat:'structural',q:'Which pattern is used when you need to make two incompatible interfaces work together?',opts:['Bridge','Adapter','Decorator','Composite'],ans:1,exp:'Adapter: converts the interface of one class into another interface clients expect. Like a power adapter fitting a foreign plug into a local socket.'},
+  {cat:'structural',q:'A file system where File and Folder both implement a Component interface uses:',opts:['Composite','Flyweight','Proxy','Bridge'],ans:0,exp:'Composite: allows individual objects (File) and compositions (Folder) to be treated uniformly. Classic tree-structure pattern.'},
+  {cat:'structural',q:'Spring AOP (aspect-oriented programming) uses which pattern under the hood?',opts:['Decorator','Proxy','Adapter','Flyweight'],ans:1,exp:'Proxy: Spring creates dynamic proxies around beans to weave in cross-cutting concerns like @Transactional, @Cacheable, and security checks.'},
+  // Behavioral
+  {cat:'behavioral',q:'The Observer pattern is the foundation of which modern concept?',opts:['Object pooling','Reactive programming / event streams','Dependency injection','Lazy loading'],ans:1,exp:'Reactive programming (RxJava, Project Reactor) and event-driven architectures are built on Observer. When one publishes, all subscribers react.'},
+  {cat:'behavioral',q:'Which pattern lets you add undo/redo functionality most cleanly?',opts:['Strategy','Command','Memento','State'],ans:1,exp:'Command: encapsulate each action as an object. To undo, execute the reverse command. For multi-step undo, maintain a command history stack.'},
+  {cat:'behavioral',q:'A payment system that switches between Stripe, PayPal, and Crypto uses:',opts:['State','Strategy','Template Method','Chain of Responsibility'],ans:1,exp:'Strategy: define a PaymentStrategy interface, implement each provider as a concrete strategy, and swap them at runtime. Classic Strategy use case.'},
+  {cat:'behavioral',q:'HTTP middleware (authentication → logging → rate-limiting → handler) is which pattern?',opts:['Observer','Decorator','Chain of Responsibility','Mediator'],ans:2,exp:'Chain of Responsibility: each handler processes the request and optionally passes it to the next handler in the chain. Express.js middleware is identical.'},
+  {cat:'behavioral',q:'An Order object transitions through: Pending → Processing → Shipped → Delivered. Which pattern models this?',opts:['Strategy','Command','Template Method','State'],ans:3,exp:'State: the Order delegates behavior to a State object. As state changes, the object\'s behavior changes. Each state is a class that handles relevant operations.'},
+];
+
+// =============================================
+// STATE
+// =============================================
+let progress = JSON.parse(localStorage.getItem('dp_progress') || '{}');
+let currentLesson = null;
+let quizState = { questions:[], current:0, score:0, answered:false, category:'all' };
+
+// =============================================
+// NAV
+// =============================================
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  const navEl = document.getElementById('nav-'+name);
+  if(navEl) navEl.classList.add('active');
+  window.scrollTo(0,0);
+
+  if(name==='curriculum') renderCurriculum();
+  if(name==='quiz') initQuiz();
+  if(name==='cheatsheet') renderCheatSheet();
+}
+
+// =============================================
+// CURRICULUM
+// =============================================
+function renderCurriculum() {
+  const total = ALL_LESSONS.length;
+  const done = Object.values(progress).filter(Boolean).length;
+  const pct = Math.round((done/total)*100);
+  document.getElementById('main-progress').style.width = pct+'%';
+  document.getElementById('progress-text').textContent = `${done} of ${total} lessons completed (${pct}%)`;
+
+  renderLessonList('solid-lessons', CURRICULUM.solid);
+  renderLessonList('creational-lessons', CURRICULUM.creational);
+  renderLessonList('structural-lessons', CURRICULUM.structural);
+  renderLessonList('behavioral-lessons', CURRICULUM.behavioral);
+}
+
+function renderLessonList(containerId, lessons) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = lessons.map((l,i) => {
+    const done = progress[l.id];
+    return `<div class="lesson-item ${done?'done':''}" onclick="openLesson('${l.id}')">
+      <div class="lesson-check ${done?'checked':''}">${done?'✓':''}</div>
+      <div class="lesson-info">
+        <div class="lesson-title">${l.title}</div>
+        <div class="lesson-meta">${l.meta}</div>
+        <div class="lesson-tags">${l.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      </div>
+      <div class="lesson-arrow">→</div>
+    </div>`;
+  }).join('');
+}
+
+// =============================================
+// LESSONS
+// =============================================
+function openLesson(id) {
+  currentLesson = id;
+  const lesson = LESSONS[id];
+  if(!lesson) {
+    // Generic lesson for unbuilt content
+    renderGenericLesson(id);
+    return;
+  }
+  showPage('lesson');
+  document.getElementById('lesson-content-area').innerHTML = lesson.html;
+  document.getElementById('lesson-sidebar-nav').innerHTML = lesson.sections.map(s=>
+    `<a href="#sec-${s.id}">${s.title}</a>`
+  ).join('');
+  updateMarkDoneBtn();
+}
+
+function renderGenericLesson(id) {
+  const allLessons = [...CURRICULUM.solid,...CURRICULUM.creational,...CURRICULUM.structural,...CURRICULUM.behavioral];
+  const lesson = allLessons.find(l=>l.id===id);
+  if(!lesson) {
+    showPage('lesson');
+    document.getElementById('lesson-content-area').innerHTML = `
+      <div class="content-block">
+        <h1>Lesson unavailable</h1>
+        <div class="lesson-meta-row">
+          <span class="difficulty diff-intermediate">Intermediate</span>
+          <span class="time-badge">⏱ Content in progress</span>
+        </div>
+        <div class="tip-box"><strong>📚 Coming soon</strong><br>The requested lesson is still being authored. Check back later, or explore the other resources below.</div>
+        <p>In the meantime, jump back to the curriculum, open the cheat sheet, or run the quiz to stay sharp.</p>
+        <div style="display:flex;gap:.8rem;flex-wrap:wrap;margin-top:2rem;">
+          <button class="btn-primary" onclick="showPage('cheatsheet')">Inspect Cheat Sheet →</button>
+          <button class="btn-secondary" onclick="showPage('curriculum')">Back to Curriculum</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('lesson-sidebar-nav').innerHTML = '<a href="#">Overview</a>';
+    updateMarkDoneBtn();
+    return;
+  }
+  showPage('lesson');
+  document.getElementById('lesson-content-area').innerHTML = `
+    <h1>${lesson.title}</h1>
+    <div class="lesson-meta-row">
+      <span class="difficulty diff-intermediate">Intermediate</span>
+      <span class="time-badge">⏱ ${lesson.meta}</span>
+    </div>
+    <div class="content-block">
+      <div class="tip-box"><strong>📚 Full Lesson Coming Soon</strong><br>This lesson is part of the complete curriculum. The core content below covers the essential concepts.</div>
+      <h2><div class="icon">💡</div> Overview</h2>
+      <p>This lesson covers <strong>${lesson.title}</strong> — one of the fundamental patterns in object-oriented design. Use the Cheat Sheet for a quick reference, and the Quiz to test your knowledge.</p>
+      <p>Key takeaways for <strong>${lesson.title}</strong>:</p>
+      <ul>
+        ${lesson.tags.map(t=>`<li>${t}</li>`).join('')}
+      </ul>
+    </div>
+    <div style="display:flex;gap:.8rem;flex-wrap:wrap;margin-top:2rem;">
+      <button class="btn-primary" onclick="showPage('cheatsheet')">View Cheat Sheet →</button>
+      <button class="btn-secondary" onclick="showPage('curriculum')">Back to Curriculum</button>
+    </div>
+  `;
+  document.getElementById('lesson-sidebar-nav').innerHTML = '<a href="#">Overview</a>';
+  updateMarkDoneBtn();
+}
+
+function toggleDone() {
+  if(!currentLesson) return;
+  progress[currentLesson] = !progress[currentLesson];
+  localStorage.setItem('dp_progress', JSON.stringify(progress));
+  updateMarkDoneBtn();
+  renderCurriculum();
+}
+
+function updateMarkDoneBtn() {
+  const btn = document.getElementById('mark-done-btn');
+  const done = progress[currentLesson];
+  btn.textContent = done ? '✓ Completed' : '✓ Mark Complete';
+  btn.className = 'mark-done-btn' + (done ? ' done' : '');
+}
+
+// =============================================
+// QUIZ
+// =============================================
+function loadQuiz(cat, btn) {
+  document.querySelectorAll('#quiz-cat-filter .filter-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  quizState.category = cat;
+  initQuiz();
+}
+
+function initQuiz() {
+  let pool = cat => QUIZ_QUESTIONS.filter(q=>q.cat===cat);
+  let questions;
+  if(quizState.category==='all') {
+    questions = [...QUIZ_QUESTIONS].sort(()=>Math.random()-.5).slice(0,20);
+  } else {
+    questions = pool(quizState.category).sort(()=>Math.random()-.5);
+  }
+  quizState = {...quizState, questions, current:0, score:0, answered:false};
+  document.getElementById('quiz-score').classList.remove('show');
+  renderQuizQuestion();
+  renderQuizDots();
+}
+
+function renderQuizDots() {
+  const {questions, current} = quizState;
+  document.getElementById('quiz-progress-dots').innerHTML = questions.map((q,i)=>
+    `<div class="qp-dot ${i<current?'done':''} ${i===current?'current':''}"></div>`
+  ).join('');
+}
+
+function renderQuizQuestion() {
+  const {questions, current} = quizState;
+  if(current >= questions.length) {
+    showQuizScore();
+    return;
+  }
+  const q = questions[current];
+  const letters = ['A','B','C','D'];
+  document.getElementById('quiz-container').innerHTML = `
+    <div class="quiz-card fade-up">
+      <div class="quiz-q-num">Question ${current+1} of ${questions.length}</div>
+      <div class="quiz-q">${q.q}</div>
+      <div class="quiz-options">
+        ${q.opts.map((o,i)=>`
+          <button class="quiz-opt" onclick="selectAnswer(${i})" id="opt-${i}">
+            <span class="quiz-opt-letter">${letters[i]}</span>${o}
+          </button>`).join('')}
+      </div>
+      <div class="quiz-explanation" id="quiz-exp">${q.exp}</div>
+      <div class="quiz-nav">
+        <button class="btn-secondary" id="next-btn" onclick="nextQuestion()" style="display:none;padding:9px 20px;font-size:.85rem;border-radius:6px;">
+          ${current+1<questions.length?'Next Question →':'See Results'}
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function selectAnswer(idx) {
+  if(quizState.answered) return;
+  quizState.answered = true;
+  const q = quizState.questions[quizState.current];
+  const opts = document.querySelectorAll('.quiz-opt');
+  opts.forEach((o,i) => {
+    o.classList.remove('selected');
+    if(i===q.ans) o.classList.add('correct');
+    else if(i===idx) o.classList.add('wrong');
+    o.disabled = true;
+  });
+  if(idx===q.ans) quizState.score++;
+  document.getElementById('quiz-exp').classList.add('show');
+  document.getElementById('next-btn').style.display='inline-flex';
+}
+
+function nextQuestion() {
+  quizState.current++;
+  quizState.answered = false;
+  renderQuizQuestion();
+  renderQuizDots();
+}
+
+function showQuizScore() {
+  const {score, questions} = quizState;
+  const pct = Math.round((score/questions.length)*100);
+  document.getElementById('quiz-container').innerHTML = '';
+  document.getElementById('quiz-score').classList.add('show');
+  document.getElementById('score-display').textContent = `${score}/${questions.length}`;
+  const msgs = pct>=90?'🏆 Expert level! You\'re in the top 10%':pct>=70?'🎯 Strong understanding. Review the missed ones.':pct>=50?'📚 Good start — keep studying!':'🔄 Keep at it — review the curriculum';
+  document.getElementById('score-msg').textContent = msgs + ` (${pct}%)`;
+}
+
+function restartQuiz() {
+  initQuiz();
+}
+
+// =============================================
+// CHEAT SHEET
+// =============================================
+function renderCheatSheet() {
+  const cats = ['all','solid','creational','structural','behavioral'];
+  const catLabels = {all:'All Patterns',solid:'SOLID',creational:'Creational',structural:'Structural',behavioral:'Behavioral'};
+  document.getElementById('cheat-filter').innerHTML = cats.map(c=>
+    `<button class="filter-tab ${c==='all'?'active':''}" onclick="filterCheat('${c}',this)">${catLabels[c]}</button>`
+  ).join('');
+  filterCheat('all',null);
+}
+
+function filterCheat(cat, btn) {
+  if(btn){
+    document.querySelectorAll('#cheat-filter .filter-tab').forEach(t=>t.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  const catColors = {solid:'cat-solid',creational:'cat-creational',structural:'cat-structural',behavioral:'cat-behavioral'};
+  const data = cat==='all' ? CHEAT_DATA : CHEAT_DATA.filter(p=>p.cat===cat);
+  document.getElementById('cheat-grid').innerHTML = data.map(p=>`
+    <div class="pattern-card">
+      <h3><span class="cat-badge ${catColors[p.cat]}">${p.name}</span>${p.full}</h3>
+      <p>${p.intent}</p>
+      <span class="pattern-use">🎯 Use when: ${p.use}</span>
+    </div>
+  `).join('');
+}
+
+// =============================================
+// LESSONS CONTENT
+const lessonSections = [
+  {id:'concept', title:'Concept'},
+  {id:'mental', title:'Mental Model'},
+  {id:'example', title:'Implementation'},
+  {id:'pitfalls', title:'Pitfalls'},
+  {id:'exercises', title:'Exercises'},
+  {id:'interview', title:'Interview Insight'},
+];
+
+function buildLessonHtml(id, data) {
+  const pitfallsHtml = (data.pitfalls || []).map(p => `<li>${p}</li>`).join('');
+  const exercisesHtml = (data.exercises || []).map(ex => `
+    <div class="exercise-block">
+      <div class="exercise-header" onclick="toggleEx(this)">
+        <span>${ex.title}</span>
+      </div>
+      <div class="exercise-body">
+        <p>${ex.body}</p>
+      </div>
+    </div>
+  `).join('');
+  const hasCode = data.example && data.example.code;
+  const codeBlock = hasCode ? `
+    <div class="code-wrap">
+      <div class="code-header">
+        <span class="code-lang">${data.example.lang || 'Java'}</span>
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      </div>
+      <pre>${data.example.code}</pre>
+    </div>
+  ` : '';
+  const nextLabel = data.nextTitle || 'Continue';
+  const nextLesson = data.next ? `
+<div class="next-lesson" onclick="openLesson('${data.next}')">
+  <div><div class="next-label">Next Lesson</div><div class="next-title">${nextLabel} →</div></div>
+  <span class="next-arrow">→</span>
+</div>
+  ` : '';
+
+  return `
+<h1>${data.title}</h1>
+<div class="lesson-meta-row">
+  <span class="difficulty ${data.difficultyClass}">${data.difficultyLabel}</span>
+  <span class="time-badge">${data.time}</span>
+  <span class="cat-badge ${data.catClass}">${data.catLabel}</span>
+</div>
+
+<div class="content-block" id="sec-concept">
+  <h2><span class="icon">💡</span> Concept</h2>
+  <p>${data.concept}</p>
+</div>
+
+<div class="content-block" id="sec-mental">
+  <h2><span class="icon">🧠</span> Mental Model</h2>
+  <p>${data.mental}</p>
+</div>
+
+<div class="content-block" id="sec-example">
+  <h2><span class="icon">⚡</span> Implementation</h2>
+  <p>${data.example.description}</p>
+  ${codeBlock}
+</div>
+
+<div class="content-block" id="sec-pitfalls">
+  <h2><span class="icon">⚠️</span> Pitfalls</h2>
+  <ul>
+    ${pitfallsHtml}
+  </ul>
+</div>
+
+<div class="content-block" id="sec-exercises">
+  <h2><span class="icon">🏋️</span> Exercises</h2>
+  ${exercisesHtml}
+</div>
+
+<div class="content-block" id="sec-interview">
+  <h2><span class="icon">💼</span> Interview Insight</h2>
+  <div class="tip-box">
+    ${data.interview}
+  </div>
+</div>
+
+${nextLesson}`.trim();
+}
+
+const LESSONS = {};
+
+const autoLessons = {
+
+
+
+  factory: {
+    title: "Factory Method Pattern",
+    difficultyClass: "diff-intermediate",
+    difficultyLabel: "Intermediate",
+    time: "15 min read",
+    catClass: "cat-creational",
+    catLabel: "Creational",
+    concept: "Factory Method lets subclasses decide which concrete class to instantiate through a protected creation method.",
+    mental: "Picture a dialog that renders buttons; the base dialog delegates button creation to subclasses depending on platform.",
+    example: {
+      description: "Dialog.render() calls createButton(); WindowsDialog returns WindowsButton while MacDialog returns MacButton.",
+      code: "public abstract class Dialog {\n    public void render() {\n        Button ok = createButton();\n        ok.draw();\n    }\n    protected abstract Button createButton();\n}\npublic class WindowsDialog extends Dialog {\n    protected Button createButton() { return new WindowsButton(); }\n}",
+      lang: "Java",
+    },
+    pitfalls: ["Overriding every factory method becomes tedious when many products exist.", "Hardcoding creation logic outside factories voids the pattern benefits."],
+    exercises: [
+      { title: "🟢 Beginner: Theme buttons", body: "Add a ThemeDialog that produces DarkButton and LightButton without changing the base Dialog." },
+      { title: "🟡 Intermediate: Job scheduler", body: "Use Factory Method to instantiate JobRunner implementations depending on the job type (I/O-bound vs CPU-bound)." },
+    ],
+    interview: "Talk about how factory methods defer instantiation so client code works with abstractions only.",
+    next: "abstract-factory",
+    nextTitle: "Abstract Factory Pattern"
+  },
+  'abstract-factory': {
+    title: "Abstract Factory Pattern",
+    difficultyClass: "diff-intermediate",
+    difficultyLabel: "Intermediate",
+    time: "18 min read",
+    catClass: "cat-creational",
+    catLabel: "Creational",
+    concept: "Abstract Factory creates families of related objects (buttons, checkboxes) without binding to concrete classes.",
+    mental: "Think of UI themes: one factory supplies all widgets for the Windows theme, another for Mac, and the client uses the factory interface.",
+    example: {
+      description: "UIFactory defines createButton() and createCheckbox(); MacFactory and WinFactory implement the family, and the client uses the factory via dependency injection.",
+      code: "public interface UIFactory {\n    Button createButton();\n    Checkbox createCheckbox();\n}\npublic class MacFactory implements UIFactory {\n    public Button createButton() { return new MacButton(); }\n    public Checkbox createCheckbox() { return new MacCheckbox(); }\n}",
+      lang: "Java",
+    },
+    pitfalls: ["Abstract factories can become unwieldy when the family grows beyond a few products.", "Changing the product family requires touching every concrete factory unless you keep the interface lean."],
+    exercises: [
+      { title: "🟢 Beginner: Theme switch", body: "Wire a SettingsPanel to select MacFactory or WinFactory via configuration and render the widgets it provides." },
+      { title: "🟡 Intermediate: Cross-platform renderer", body: "Build a RendererFactory that supplies Shapes and Textures for 2D vs 3D backends." },
+    ],
+    interview: "Explain how Abstract Factory keeps related creation logic grouped per family so the client never touches concrete classes.",
+    next: "builder",
+    nextTitle: "Builder Pattern"
+  },
+  builder: {
+    title: "Builder Pattern",
+    difficultyClass: "diff-intermediate",
+    difficultyLabel: "Intermediate",
+    time: "15 min read",
+    catClass: "cat-creational",
+    catLabel: "Creational",
+    concept: "Builder separates construction from representation so complex objects are assembled step by step using a fluent API.",
+    mental: "Building an HTTP request is like ordering a sandwich: you pick bun, fillings, sauces in any order before confirming.",
+    example: {
+      description: "HttpRequestBuilder exposes url(), header(), body(), then build(); the builder hides the telescoping constructor complexity.",
+      code: "public class HttpRequestBuilder {\n    private String url;\n    private Map<String,String> headers = new HashMap<>();\n    public HttpRequestBuilder url(String url) { this.url = url; return this; }\n    public HttpRequestBuilder header(String key, String value) { headers.put(key, value); return this; }\n    public HttpRequest build() { return new HttpRequest(url, headers); }\n}",
+      lang: "Java",
+    },
+    pitfalls: ["Builders add verbosity; avoid them for simple constructors.", "Mutable builders shared between threads need defensive copies."],
+    exercises: [
+      { title: "🟢 Beginner: Email builder", body: "Create an EmailBuilder that chains subject(), body(), attachments() before send()." },
+      { title: "🟡 Intermediate: Report generator", body: "Use Builder to assemble a financial report with optional charts, tables, and export formats." },
+    ],
+    interview: "Mention how builders keep constructors readable and allow immutability on the final product.",
+    next: "prototype",
+    nextTitle: "Prototype Pattern"
+  },
+  prototype: {
+    title: "Prototype Pattern",
+    difficultyClass: "diff-intermediate",
+    difficultyLabel: "Intermediate",
+    time: "12 min read",
+    catClass: "cat-creational",
+    catLabel: "Creational",
+    concept: "Prototype clones existing objects to produce new ones instead of constructing from scratch when instantiation is expensive.",
+    mental: "Copy-pasting a filled invoice template is faster than recreating it from data every time.",
+    example: {
+      description: "Document prototypes implement cloneDocument(); the factory returns clones, so each instance can be tweaked without affecting the prototype.",
+      code: "public abstract class Document {\n    public abstract Document cloneDocument();\n}\npublic class Resume extends Document {\n    public Document cloneDocument() { return new Resume(this); }\n}",
+      lang: "Java",
+    },
+    pitfalls: ["Cloning deep object graphs is tricky; you must decide between shallow and deep copies.", "Prototype factories become hard to manage when there are many variants without a registry."],
+    exercises: [
+      { title: "🟢 Beginner: Template factory", body: "Create a form template factory that clones shared sections and lets users customize fields." },
+      { title: "🟡 Intermediate: Game entities", body: "Implement an EntityFactory that clones enemy prototypes (orc, troll) when spawning waves." },
+    ],
+    interview: "Explain how Prototype avoids expensive constructors when you need dozens of objects that differ slightly.",
+    next: "adapter",
+    nextTitle: "Adapter Pattern"
+  },
+  adapter: {
+    title: "Adapter Pattern",
+    difficultyClass: "diff-beginner",
+    difficultyLabel: "Beginner",
+    time: "12 min read",
+    catClass: "cat-structural",
+    catLabel: "Structural",
+    concept: "Adapter converts one interface into another so incompatible classes can work together.",
+    mental: "A power plug adapter lets a US plug fit into a European socket without changing the appliance.",
+    example: {
+      description: "LegacyRectangle exposes draw(); the adapter implements Shape and translates calls for modern rendering.",
+      code: "public class LegacyRectangle { public void draw() { /* old API */ } }\npublic interface Shape { void render(); }\npublic class RectangleAdapter implements Shape {\n    private final LegacyRectangle adaptee = new LegacyRectangle();\n    public void render() { adaptee.draw(); }\n}",
+      lang: "Java",
+    },
+    pitfalls: ["Overusing adapters can mask a badly designed core API.", "Adapters which do heavy work (like converting formats) can hide performance costs."],
+    exercises: [
+      { title: "🟢 Beginner: JSON/XML adapter", body: "Wrap an old XML parser behind a new JsonParser interface using the adapter." },
+      { title: "🟡 Intermediate: Payment gateway adapter", body: "Implement adapters around Stripe and PayPal SDKs so the billing module depends on your PaymentGateway interface." },
+    ],
+    interview: "Discuss how Adapter lets you reuse legacy code without touching the client-facing API.",
+    next: "bridge",
+    nextTitle: "Bridge Pattern"
+  },
+  bridge: {
+    title: "Bridge Pattern",
+    difficultyClass: "diff-advanced",
+    difficultyLabel: "Advanced",
+    time: "18 min read",
+    catClass: "cat-structural",
+    catLabel: "Structural",
+    concept: "Bridge separates the abstraction from its implementation so both can vary independently.",
+    mental: "A universal remote (abstraction) works with TVs, stereos, and projectors by delegating to device implementations.",
+    example: {
+      description: "RemoteControl keeps a Device reference (the implementation); ConcreteRemote controls TVs or Radios through the device interface.",
+      code: "public interface Device { void powerOn(); void powerOff(); }\npublic abstract class RemoteControl {\n    protected Device device;\n    public RemoteControl(Device device) { this.device = device; }\n    public void togglePower() { /* delegate to device */ }\n}\npublic class TVRemote extends RemoteControl {\n    public TVRemote(Device device) { super(device); }\n}",
+      lang: "Java",
+    },
+    pitfalls: ["Bridge can feel like overkill when abstraction and implementation both never change.", "Running two hierarchies complicates debugging if the layers aren't clearly separated."],
+    exercises: [
+      { title: "🟢 Beginner: Notification bridge", body: "Bridge a NotificationSender abstraction to EmailSender and SmsSender implementations." },
+      { title: "🟡 Intermediate: Renderer + backend", body: "Combine Rendering abstraction with GPU/CPU implementations so both vary independently." },
+    ],
+    interview: "Highlight how Bridge avoids combinatorial explosion when you need multiple abstractions across multiple implementations.",
+    next: "composite",
+    nextTitle: "Composite Pattern"
+  },
+  composite: {
+    title: "Composite Pattern",
+    difficultyClass: "diff-intermediate",
+    difficultyLabel: "Intermediate",
+    time: "15 min read",
+    catClass: "cat-structural",
+    catLabel: "Structural",
+    concept: "Composite lets clients treat composites and leaves uniformly through a shared component interface.",
+    mental: "A folder (composite) and file (leaf) both implement the same Component API so directories can be nested arbitrarily.",
+    example: {
+      description: "Graphic interface exposes draw(); Picture (composite) holds child Graphics, while Dot (leaf) draws a pixel.",
+      code: "public interface Graphic { void draw(); }\npublic class Dot implements Graphic { public void draw() { /* paint dot */ } }\npublic class Picture implements Graphic {\n    private final List<Graphic> children = new ArrayList<>();\n    public void draw() { children.forEach(Graphic::draw); }\n}",
+      lang: "Java",
+    },
+    pitfalls: ["Composite can expose unnecessary operations (add/remove) to leaf nodes.", "Debugging deep trees without instrumentation is hard."],
+    exercises: [
+      { title: "🟢 Beginner: Menu tree", body: "Build a MenuComponent tree for toolbar buttons and submenus." },
+      { title: "🟡 Intermediate: Organization chart", body: "Represent employees and departments with the same interface and traverse for payroll." },
+    ],
+    interview: "Point out how Composite simplifies clients by letting them iterate on a tree without checking for leaf/composite.",
+    next: "decorator",
+    nextTitle: "Decorator Pattern"
+  },
+  facade: {
+    title: "Facade Pattern",
+    difficultyClass: "diff-beginner",
+    difficultyLabel: "Beginner",
+    time: "12 min read",
+    catClass: "cat-structural",
+    catLabel: "Structural",
+    concept: "Facade provides a simplified interface over a set of subsystems, hiding their complexity.",
+    mental: "A concierge (facade) hides the hotel systems while guests talk to a single person.",
+    example: {
+      description: "PaymentFacade orchestrates AuthorizationService, InventoryService, and NotificationService in one place so the checkout flow stays slim.",
+      code: "public class PaymentFacade {\n    public void purchase(Order order) {\n        new AuthorizationService().authorize(order);\n        new InventoryService().reserve(order);\n        new NotificationService().notify(order);\n    }\n}",
+      lang: "Java",
+    },
+    pitfalls: ["Facades can become God classes if they start exposing too much logic.", "Leaking subsystem objects through the facade negates the simplification."],
+    exercises: [
+      { title: "🟢 Beginner: Media facade", body: "Wrap video playback, buffering, and analytics services behind MediaPlayerFacade so the UI just calls play()." },
+      { title: "🟡 Intermediate: Data access facade", body: "Create a DataFacade that consolidates repositories, caches, and audit logging behind a single method." },
+    ],
+    interview: "Describe how Facade keeps the client code slim and hides choreography between subsystems.",
+    next: "flyweight",
+    nextTitle: "Flyweight Pattern"
+  },
+  flyweight: {
+    title: "Flyweight Pattern",
+    difficultyClass: "diff-advanced",
+    difficultyLabel: "Advanced",
+    time: "18 min read",
+    catClass: "cat-structural",
+    catLabel: "Structural",
+    concept: "Flyweight shares immutable state among many objects to save memory, storing extrinsic state externally.",
+    mental: "Text rendering reuses glyph shapes and only stores character position per instance.",
+    example: {
+      description: "GlyphFactory returns shared Glyph objects while the renderer supplies position (extrinsic state) separately.",
+      code: "public class GlyphFactory {\n    private final Map<Character, Glyph> cache = new HashMap<>();\n    public Glyph glyph(char c) { return cache.computeIfAbsent(c, Glyph::new); }\n}\npublic class Glyph { public Glyph(char c) { /* heavy data */ } }",
+      lang: "Java",
+    },
+    pitfalls: ["Sharing mutable state is dangerous; only constant data should be flyweighted.", "Managing extrinsic state separately adds bookkeeping complexity."],
+    exercises: [
+      { title: "🟢 Beginner: Emoji reuse", body: "Create an EmojiFlyweight that caches common emoji metadata and reuses the objects." },
+      { title: "🟡 Intermediate: Particle system", body: "Pool Particle prototypes and feed extrinsic properties (position, velocity) per frame." },
+    ],
+    interview: "Point out memory savings when you share glyphs or avatars versus creating new objects for each appearance.",
+    next: "proxy",
+    nextTitle: "Proxy Pattern"
+  },
+  proxy: {
+    title: "Proxy Pattern",
+    difficultyClass: "diff-intermediate",
+    difficultyLabel: "Intermediate",
+    time: "15 min read",
+    catClass: "cat-structural",
+    catLabel: "Structural",
+    concept: "Proxy provides a surrogate for another object to control access, add caching, or lazy load.",
+    mental: "A security guard (proxy) checks credentials before letting someone into a room (real subject).",
+    example: {
+      description: "ImageProxy delays loading a huge bitmap until render() is called, caching the real image afterward.",
+      code: "public interface Image { void render(); }\npublic class ImageProxy implements Image {\n    private RealImage real;\n    public void render() {\n        if (real == null) real = new RealImage();\n        real.render();\n    }\n}",
+      lang: "Java",
+    },
+    pitfalls: ["Proxies that are too smart (e.g., mutating state silently) violate expectations.", "If proxies and subjects expose different interfaces, the pattern collapses."],
+    exercises: [
+      { title: "🟢 Beginner: Logging proxy", body: "Wrap any service with a proxy that logs method entry/exit." },
+      { title: "🟡 Intermediate: Rate-limiting proxy", body: "Protect a remote API client behind a proxy that rejects calls when limits are exceeded." },
+    ],
+    interview: "Mention how proxies can add security, lazy loading, or caching without touching the real subject.",
+    next: "observer",
+    nextTitle: "Observer Pattern"
+  },
+  command: {
+    title: "Command Pattern",
+    difficultyClass: "diff-intermediate",
+    difficultyLabel: "Intermediate",
+    time: "15 min read",
+    catClass: "cat-behavioral",
+    catLabel: "Behavioral",
+    concept: "Command encapsulates a request as an object so you can parameterize invokers, queue operations, or support undo.",
+    mental: "A remote control maps each button to a Command object; pressing a button triggers execute(), and undo() rolls back.",
+    example: {
+      description: "Command exposes execute() and undo(); Invoker keeps history to support multi-level undo.",
+      code: "public interface Command { void execute(); void undo(); }\npublic class MoveCommand implements Command {\n    public void execute() { /* move right */ }\n    public void undo() { /* move left */ }\n}",
+      lang: "Java",
+    },
+    pitfalls: ["Commands can proliferate quickly; use parameterized constructors wisely.", "Undo logic must be carefully inverted or you risk corrupting state."],
+    exercises: [
+      { title: "🟢 Beginner: Macro recorder", body: "Log user actions as commands and replay them sequentially." },
+      { title: "🟡 Intermediate: Job queue", body: "Implement a job scheduler that serializes Command objects and retries failures." },
+    ],
+    interview: "Tell the interviewer how Command supports undo, logging, and macro recording by treating actions as data.",
+    next: "template",
+    nextTitle: "Template Method Pattern"
+  },
+  template: {
+    title: "Template Method Pattern",
+    difficultyClass: "diff-beginner",
+    difficultyLabel: "Beginner",
+    time: "12 min read",
+    catClass: "cat-behavioral",
+    catLabel: "Behavioral",
+    concept: "Template Method defines the skeleton of an algorithm and lets subclasses override specific steps.",
+    mental: "A recipe spells out bake()->cool()->serve(), but each pastry overrides the filling step.",
+    example: {
+      description: "DataProcessor.process() calls parse(), transform(), and save(); subclasses override parse()/transform() for CSV, JSON, etc.",
+      code: "public abstract class DataProcessor {\n    public final void process() {\n        parse();\n        transform();\n        save();\n    }\n    protected abstract void parse();\n    protected abstract void transform();\n    private void save() { /* shared persistence */ }\n}",
+      lang: "Java",
+    },
+    pitfalls: ["Hook methods can be misused to leak large chunks of logic to subclasses.", "Template class becomes rigid if too many steps are final."],
+    exercises: [
+      { title: "🟢 Beginner: Report template", body: "Create a ReportGenerator base class and override drawHeader()/drawBody() for PDF vs HTML." },
+      { title: "🟡 Intermediate: ETL pipeline", body: "Use Template Method to process data sources with shared validation and persistence steps." },
+    ],
+    interview: "Describe how Template Method enforces the algorithm while letting subclasses customize the variable parts.",
+    next: "iterator",
+    nextTitle: "Iterator Pattern"
+  },
+  iterator: {
+    title: "Iterator Pattern",
+    difficultyClass: "diff-beginner",
+    difficultyLabel: "Beginner",
+    time: "12 min read",
+    catClass: "cat-behavioral",
+    catLabel: "Behavioral",
+    concept: "Iterator provides a way to traverse a collection without exposing its underlying structure.",
+    mental: "A cursor moving over a database result set hides paging or tree internals from the caller.",
+    example: {
+      description: "TreeIterator walks nodes in order, exposing next() and hasNext() for the client.",
+      code: "public interface Iterator<T> { boolean hasNext(); T next(); }\npublic class TreeIterator implements Iterator<Node> {\n    private final Deque<Node> stack = new ArrayDeque<>();\n    public boolean hasNext() { return !stack.isEmpty(); }\n    public Node next() { return stack.pop(); }\n}",
+      lang: "Java",
+    },
+    pitfalls: ["Mutating the collection while iterating must be detected to avoid ConcurrentModificationException.", "Always provide a way to reset or recreate the iterator when needed."],
+    exercises: [
+      { title: "🟢 Beginner: Custom iterator", body: "Implement an iterator for a matrix that filters out zeros." },
+      { title: "🟡 Intermediate: Tree flattening", body: "Provide an iterator that flattens a nested tree into a stream of leaves." },
+    ],
+    interview: "Point out how iterators hide traversal logic and allow multiple simultaneous traversals.",
+    next: "state",
+    nextTitle: "State Pattern"
+  },
+  state: {
+    title: "State Pattern",
+    difficultyClass: "diff-advanced",
+    difficultyLabel: "Advanced",
+    time: "18 min read",
+    catClass: "cat-behavioral",
+    catLabel: "Behavioral",
+    concept: "State lets an object alter its behavior when its internal state changes, by delegating to state objects.",
+    mental: "A traffic light switches between RedState, GreenState, and YellowState without the controller having big conditionals.",
+    example: {
+      description: "Order holds a state reference; each state (PendingState, ShippedState) handles the operations valid from that state.",
+      code: "public interface OrderState { void next(Order order); }\npublic class PendingState implements OrderState {\n    public void next(Order order) { order.setState(new ProcessingState()); }\n}",
+      lang: "Java",
+    },
+    pitfalls: ["State transitions become hard to follow without a diagram.", "Duplicating behavior across states defeats the benefit of shared context."],
+    exercises: [
+      { title: "🟢 Beginner: Door state", body: "Implement DoorState with OpenState, ClosedState, and LockedState and delegate handleOpen/handleClose." },
+      { title: "🟡 Intermediate: Order workflow", body: "Model an order lifecycle with PaymentPending, Confirmed, Shipped, and Cancelled states." },
+    ],
+    interview: "Explain how State eliminates big switch statements by letting each state class own its behavior.",
+    next: "chain",
+    nextTitle: "Chain of Responsibility"
+  },
+  chain: {
+    title: "Chain of Responsibility",
+    difficultyClass: "diff-intermediate",
+    difficultyLabel: "Intermediate",
+    time: "15 min read",
+    catClass: "cat-behavioral",
+    catLabel: "Behavioral",
+    concept: "Chain passes a request along a handler chain until someone handles it.",
+    mental: "Support tickets escalate through tier 1, tier 2, and eventually tier 3 engineers.",
+    example: {
+      description: "LoggerChain holds handlers for DEBUG, INFO, ERROR; the request traverses until a handler handles the level.",
+      code: "public abstract class Handler {\n    protected Handler next;\n    public Handler linkWith(Handler next) { this.next = next; return next; }\n    public abstract void handle(LogRecord record);\n}\npublic class ErrorHandler extends Handler {\n    public void handle(LogRecord record) { if (record.isError()) { /* handle */ } else if (next != null) next.handle(record); }\n}",
+      lang: "Java",
+    },
+    pitfalls: ["Chains with optional handlers can be hard to debug without logging each link.", "If no handler handles the request, you must provide a default behavior."],
+    exercises: [
+      { title: "🟢 Beginner: Middleware chain", body: "Implement a middleware stack where each handler can short-circuit or pass along the request." },
+      { title: "🟡 Intermediate: Validation pipeline", body: "Use a chain to validate a form and stop at the first failing validator." },
+    ],
+    interview: "Say Chain keeps request processing decoupled and allows adding new handlers without touching others.",
+    next: "mediator",
+    nextTitle: "Mediator Pattern"
+  },
+  mediator: {
+    title: "Mediator Pattern",
+    difficultyClass: "diff-intermediate",
+    difficultyLabel: "Intermediate",
+    time: "15 min read",
+    catClass: "cat-behavioral",
+    catLabel: "Behavioral",
+    concept: "Mediator encapsulates how objects interact, centralizing the communication to reduce coupling.",
+    mental: "Air traffic control coordinates pilots instead of pilots talking to every other aircraft directly.",
+    example: {
+      description: "ChatRoomMediator routes messages between users, so users only talk to the mediator.",
+      code: "public interface ChatMediator { void sendMessage(User user, String msg); }\npublic class ChatRoom implements ChatMediator {\n    public void sendMessage(User user, String msg) { /* notify other users */ }\n}",
+      lang: "Java",
+    },
+    pitfalls: ["Mediator can evolve into a God object if it manages too many responsibilities.", "Changes in mediator logic can ripple through all colleagues if not modularized."],
+    exercises: [
+      { title: "🟢 Beginner: Dialog mediator", body: "Let DialogMediator enable/disable buttons based on form state without widgets coupling." },
+      { title: "🟡 Intermediate: Traffic router", body: "Coordinate microservices using a mediator that queues requests and resolves dependencies." },
+    ],
+    interview: "Explain how Mediator reduces dependencies among colleagues and centralizes workflow logic.",
+    next: "memento",
+    nextTitle: "Memento Pattern"
+  },
+  memento: {
+    title: "Memento Pattern",
+    difficultyClass: "diff-intermediate",
+    difficultyLabel: "Intermediate",
+    time: "12 min read",
+    catClass: "cat-behavioral",
+    catLabel: "Behavioral",
+    concept: "Memento captures and restores an object's state without exposing its internals.",
+    mental: "Saving a game snapshot lets players roll back to that exact state without knowing the internals of the game engine.",
+    example: {
+      description: "Editor saves a Memento that stores cursor position, text, and selection; the caretaker restores the state on undo.",
+      code: "public class Editor {\n    public EditorMemento save() { return new EditorMemento(text, cursor); }\n    public void restore(EditorMemento m) { text = m.text; cursor = m.cursor; }\n}",
+      lang: "Java",
+    },
+    pitfalls: ["Storing too many mementos consumes memory; limit history depth.", "Memento should be immutable to avoid accidental changes."],
+    exercises: [
+      { title: "🟢 Beginner: Simple undo", body: "Capture the text area state before edits and restore it via undo." },
+      { title: "🟡 Intermediate: Command history", body: "Combine Memento with Command so each undo stores the previous state." },
+    ],
+    interview: "Highlight how Memento preserves encapsulation while still allowing undo/redos.",
+    next: "visitor",
+    nextTitle: "Visitor Pattern"
+  },
+  visitor: {
+    title: "Visitor Pattern",
+    difficultyClass: "diff-advanced",
+    difficultyLabel: "Advanced",
+    time: "20 min read",
+    catClass: "cat-behavioral",
+    catLabel: "Behavioral",
+    concept: "Visitor separates operations from object structures, letting you add new operations without modifying elements.",
+    mental: "A tour guide visits every room (element) and performs actions without altering the rooms themselves.",
+    example: {
+      description: "Visitor implements visit(File), visit(Folder), etc.; HtmlExporter visitor renders the structure to HTML.",
+      code: "public interface Visitor { void visit(File file); void visit(Folder folder); }\npublic class HtmlExporter implements Visitor {\n    public void visit(File file) { /* render file */ }\n    public void visit(Folder folder) { /* open folder */ }\n}",
+      lang: "Java",
+    },
+    pitfalls: ["Adding new element types requires updating every visitor.", "Visitor breaks encapsulation if it reaches private fields without accessors."],
+    exercises: [
+      { title: "🟢 Beginner: Metrics visitor", body: "Run visitors over a component tree to collect line counts and cyclomatic complexity." },
+      { title: "🟡 Intermediate: Export visitor", body: "Add JSON, XML, and Markdown visitors to a document structure." },
+    ],
+    interview: "Describe how Visitor adds operations without touching the element classes themselves.",
+    next: "srp",
+    nextTitle: "Single Responsibility Principle"
+  },
+};
+
+Object.entries(autoLessons).forEach(([id, data]) => {
+  LESSONS[id] = { sections: lessonSections, html: buildLessonHtml(id, data) };
+});
+
+// =============================================
+Object.assign(LESSONS, {
+
+isp:{
+  sections:[
+    {id:'concept',title:'Concept'},
+    {id:'mental',title:'Mental Model'},
+    {id:'example',title:'Code Example'},
+    {id:'pitfalls',title:'Pitfalls'},
+    {id:'exercises',title:'Exercises'},
+    {id:'interview',title:'Interview Insight'},
+  ],
+  html:`
+<h1>Interface Segregation Principle</h1>
+<div class="lesson-meta-row">
+  <span class="difficulty diff-beginner">Beginner</span>
+  <span class="time-badge">⏱ 10 min read</span>
+  <span class="cat-badge cat-solid">SOLID</span>
+</div>
+
+<div class="content-block" id="sec-concept">
+  <h2><span class="icon">💡</span> Concept</h2>
+  <p><strong>Definition:</strong> Clients should not be forced to depend upon interfaces that they do not use.</p>
+  <p>A "fat" interface is one that has grown uncontrollably, absorbing dozens of methods that serve entirely different use cases. When an interface becomes a catch-all, any class implementing it must provide dummy implementations (or throw exceptions) for methods it doesn't care about. Furthermore, any client consuming that interface is needlessly coupled to all those irrelevant methods.</p>
+  <div class="analogy-box">
+    <strong>🎛️ Analogy:</strong> Imagine buying a toaster, but the control panel includes buttons for "Brew Coffee", "Blend Smoothie", and "Preheat Oven". To use the toaster, you have to navigate this massive, confusing panel. The manufacturer (the class) was forced to wire all those unused buttons just to conform to a "UniversalAppliance" standard. That's a fat interface.
+  </div>
+</div>
+
+<div class="content-block" id="sec-mental">
+  <h2><span class="icon">🧠</span> Mental Model</h2>
+  <div class="mental-model">
+    <h4>Role-Based Interfaces</h4>
+    <p>Think of interfaces as <strong>roles</strong> rather than comprehensive identities. An interface shouldn't describe <em>everything</em> an object can do; it should describe <em>one specific capability</em> an object possesses.</p>
+    <p>A class can implement as many small role-interfaces as it needs. But the client requiring the object should only ask for the specific role it needs to interact with.</p>
+  </div>
+</div>
+
+<div class="content-block" id="sec-example">
+  <h2><span class="icon">⚡</span> Code Example</h2>
+  <p><strong>The Violation:</strong> A massive interface forcing dummy implementations.</p>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Java — BAD (ISP Violation)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm">// The Fat Interface</span>
+<span class="kw">public interface</span> <span class="cl">Worker</span> {
+    <span class="kw">void</span> <span class="fn">work</span>();
+    <span class="kw">void</span> <span class="fn">eat</span>();
+    <span class="kw">void</span> <span class="fn">sleep</span>();
+}
+
+<span class="cm">// HumanWorker is fine with this.</span>
+<span class="kw">public class</span> <span class="cl">HumanWorker</span> <span class="kw">implements</span> <span class="cl">Worker</span> {
+    <span class="kw">public void</span> <span class="fn">work</span>() { <span class="cm">/* typing */</span> }
+    <span class="kw">public void</span> <span class="fn">eat</span>() { <span class="cm">/* eating lunch */</span> }
+    <span class="kw">public void</span> <span class="fn">sleep</span>() { <span class="cm">/* sleeping */</span> }
+}
+
+<span class="cm">// RobotWorker is forced to implement things it doesn't do.</span>
+<span class="kw">public class</span> <span class="cl">RobotWorker</span> <span class="kw">implements</span> <span class="cl">Worker</span> {
+    <span class="kw">public void</span> <span class="fn">work</span>() { <span class="cm">/* assembling */</span> }
+    
+    <span class="cm">// Violating ISP by forcing dummy methods</span>
+    <span class="kw">public void</span> <span class="fn">eat</span>() { <span class="kw">throw new</span> <span class="cl">UnsupportedOperationException</span>(); }
+    <span class="kw">public void</span> <span class="fn">sleep</span>() { <span class="kw">throw new</span> <span class="cl">UnsupportedOperationException</span>(); }
+}</pre>
+  </div>
+  
+  <p><strong>The Fix:</strong> Segregate the interfaces into cohesive, focused roles.</p>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Java — GOOD (ISP Applied)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm">// 1. Segregate into roles</span>
+<span class="kw">public interface</span> <span class="cl">Workable</span> { 
+    <span class="kw">void</span> <span class="fn">work</span>(); 
+}
+
+<span class="kw">public interface</span> <span class="cl">Biological</span> { 
+    <span class="kw">void</span> <span class="fn">eat</span>(); 
+    <span class="kw">void</span> <span class="fn">sleep</span>(); 
+}
+
+<span class="cm">// 2. Implement only what is relevant to the entity</span>
+<span class="kw">public class</span> <span class="cl">HumanWorker</span> <span class="kw">implements</span> <span class="cl">Workable</span>, <span class="cl">Biological</span> {
+    <span class="kw">public void</span> <span class="fn">work</span>() { <span class="cm">/* typing */</span> }
+    <span class="kw">public void</span> <span class="fn">eat</span>() { <span class="cm">/* eating lunch */</span> }
+    <span class="kw">public void</span> <span class="fn">sleep</span>() { <span class="cm">/* sleeping */</span> }
+}
+
+<span class="kw">public class</span> <span class="cl">RobotWorker</span> <span class="kw">implements</span> <span class="cl">Workable</span> {
+    <span class="kw">public void</span> <span class="fn">work</span>() { <span class="cm">/* assembling */</span> }
+    <span class="cm">// No longer forced to implement eat() or sleep()!</span>
+}
+
+<span class="cm">// 3. Clients request ONLY the role they need</span>
+<span class="kw">public class</span> <span class="cl">FactoryAssemblyLine</span> {
+    <span class="kw">public void</span> <span class="fn">startProcess</span>(<span class="cl">Workable</span> worker) {
+        worker.<span class="fn">work</span>(); <span class="cm">// Factory doesn't care if it's biological or robotic</span>
+    }
+}</pre>
+  </div>
+</div>
+
+<div class="content-block" id="sec-pitfalls">
+  <h2><span class="icon">⚠️</span> Pitfalls & Trade-offs</h2>
+  <ul>
+    <li><strong>Micro-Interfaces:</strong> Segregating interfaces until every interface has exactly 1 method is an anti-pattern. If a client legitimately needs both <code>read()</code> and <code>write()</code> together as a cohesive unit, a <code>ReadWrite</code> interface is fine. Segregate by <em>actor/client needs</em>, not blindly by method count.</li>
+    <li><strong>Type Casting Hacks:</strong> If a client requests a targeted interface like <code>Reader</code>, but internally casts it to the concrete class to call <code>write()</code>, the segregation has failed and the design is fundamentally broken.</li>
+  </ul>
+</div>
+
+<div class="content-block" id="sec-exercises">
+  <h2><span class="icon">🏋️</span> Exercises</h2>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)">
+      <span>🟢 Beginner: The Cloud Storage API</span>
+      <span class="ex-diff diff-beginner" style="background:rgba(34,197,94,.15);color:#4ade80;">Beginner</span>
+    </div>
+    <div class="exercise-body">
+      <p>A <code>CloudStorageProvider</code> interface dictates: <code>uploadFile</code>, <code>downloadFile</code>, <code>createBucket</code>, <code>deleteBucket</code>, and <code>listRegions</code>. A new client application ONLY needs to upload profile pictures. Refactor the interface to prevent coupling the mobile app to region management methods.</p>
+    </div>
+  </div>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)">
+      <span>🟡 Intermediate: Repository Interfaces</span>
+      <span class="ex-diff diff-intermediate" style="background:rgba(245,166,35,.15);color:var(--amber);">Intermediate</span>
+    </div>
+    <div class="exercise-body">
+      <p>In modern Java, it's common to see <code>CrudRepository</code> with 20 methods. Consider an event-sourced system where the Read Model is completely separate from the Write Model (CQRS). Segregate a generic data access interface into precise Read and Write roles.</p>
+    </div>
+  </div>
+</div>
+
+<div class="content-block" id="sec-interview">
+  <h2><span class="icon">💼</span> Interview Insight</h2>
+  <div class="tip-box">
+    <strong>🎯 Quick check:</strong> "If I implement this interface, do I have to leave any methods empty or throw an exception?" If yes, it's an ISP violation.
+  </div>
+  <p>In interviews, mention how ISP leads to <strong>Role Interfaces</strong> (a concept highly prioritized in Go and modern Java). Say: "ISP ensures that clients only depend on the exact slice of functionality they need. This makes mocking in unit tests vastly easier, and prevents massive recompilation cascades in large monoliths when an unused method is changed."</p>
+</div>
+
+<div class="next-lesson" onclick="openLesson('dip')">
+  <div><div class="next-label">Next Lesson</div><div class="next-title">Dependency Inversion Principle →</div></div>
+  <span class="next-arrow">→</span>
+</div>
+  `,
+},
+
+dip:{
+  sections:[
+    {id:'concept',title:'Concept'},
+    {id:'mental',title:'Mental Model'},
+    {id:'example',title:'Code Example'},
+    {id:'advanced',title:'Inversion of Control & DI'},
+    {id:'exercises',title:'Exercises'},
+    {id:'interview',title:'Interview Insight'},
+  ],
+  html:`
+<h1>Dependency Inversion Principle</h1>
+<div class="lesson-meta-row">
+  <span class="difficulty diff-intermediate">Intermediate</span>
+  <span class="time-badge">⏱ 15 min read</span>
+  <span class="cat-badge cat-solid">SOLID</span>
+</div>
+
+<div class="content-block" id="sec-concept">
+  <h2><span class="icon">💡</span> Concept</h2>
+  <p><strong>Definition:</strong> High-level modules should not depend on low-level modules. Both should depend on abstractions. Furthermore, abstractions should not depend on details; details should depend on abstractions.</p>
+  <p>DIP is the ultimate weapon against rigid, tightly-coupled code. Traditionally, high-level business logic explicitly creates and calls low-level utility classes (e.g., a reporting service directly instantiating a MySQL database client). This means changes in the low-level utility <em>break</em> the high-level business logic.</p>
+  <div class="analogy-box">
+    <strong>🔌 Analogy:</strong> When building a lamp, you don't solder the lamp's internal wiring directly to the wall grid of a specific power company. You wire the lamp to an abstract "Plug". The wall provides an abstract "Socket". Because both the lamp (high-level) and the power grid (low-level) depend on this shared abstraction (plug/socket interface), you can swap power companies, or take the lamp to a different room, without rewriting the lamp.
+  </div>
+</div>
+
+<div class="content-block" id="sec-mental">
+  <h2><span class="icon">🧠</span> Mental Model</h2>
+  <div class="mental-model">
+    <h4>Flipping the Dependency Arrows</h4>
+    <p>In procedural code, the arrows point downward: <code>PaymentProcess -> StripeClient -> HttpClient</code>.</p>
+    <p>With DIP, we flip the arrows so they all point toward abstractions: <code>PaymentProcess -> IPaymentProvider</code> and <code>StripeClient -> IPaymentProvider</code>. The high-level module (PaymentProcess) <em>owns</em> the abstraction, dictating the contract. The low-level module (StripeClient) is forced to conform.</p>
+  </div>
+</div>
+
+<div class="content-block" id="sec-example">
+  <h2><span class="icon">⚡</span> Code Example</h2>
+  <p><strong>The Violation:</strong> Instantiating concrete dependencies directly using the <code>new</code> keyword couples the classes tightly.</p>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Java — BAD (DIP Violation)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm">// Low-level detail</span>
+<span class="kw">public class</span> <span class="cl">StripeApi</span> {
+    <span class="kw">public void</span> <span class="fn">chargeCreditCard</span>(<span class="kw">double</span> amount) { <span class="cm">/* Make HTTP call to Stripe */</span> }
+}
+
+<span class="cm">// High-level policy</span>
+<span class="kw">public class</span> <span class="cl">CheckoutService</span> {
+    <span class="cm">// STRONG COUPLING: We depend directly on StripeApi</span>
+    <span class="kw">private final</span> <span class="cl">StripeApi</span> stripeApi = <span class="kw">new</span> <span class="cl">StripeApi</span>(); 
+
+    <span class="kw">public void</span> <span class="fn">completeCheckout</span>(<span class="kw">double</span> totalAmount) {
+        <span class="cm">// If we want to switch to PayPal, we have to rewrite this entire class.</span>
+        stripeApi.<span class="fn">chargeCreditCard</span>(totalAmount);
+    }
+}</pre>
+  </div>
+  
+  <p><strong>The Fix:</strong> Inject an abstraction through the constructor (Dependency Injection).</p>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Java — GOOD (DIP Applied)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm">// 1. The Abstraction (Owned by the High-Level module's domain)</span>
+<span class="kw">public interface</span> <span class="cl">PaymentGateway</span> {
+    <span class="kw">void</span> <span class="fn">processPayment</span>(<span class="kw">double</span> amount);
+}
+
+<span class="cm">// 2. Low-level module depends on (implements) the abstraction</span>
+<span class="kw">public class</span> <span class="cl">StripeGateway</span> <span class="kw">implements</span> <span class="cl">PaymentGateway</span> {
+    <span class="kw">public void</span> <span class="fn">processPayment</span>(<span class="kw">double</span> amount) { 
+        <span class="cm">// Call Stripe API</span>
+    }
+}
+
+<span class="kw">public class</span> <span class="cl">PayPalGateway</span> <span class="kw">implements</span> <span class="cl">PaymentGateway</span> {
+    <span class="kw">public void</span> <span class="fn">processPayment</span>(<span class="kw">double</span> amount) { 
+        <span class="cm">// Call PayPal API</span>
+    }
+}
+
+<span class="cm">// 3. High-level policy depends ONLY on the abstraction via Constructor Injection</span>
+<span class="kw">public class</span> <span class="cl">CheckoutService</span> {
+    <span class="kw">private final</span> <span class="cl">PaymentGateway</span> paymentGateway;
+
+    <span class="cm">// The dependency is INJECTED. CheckoutService doesn't know who implemented it.</span>
+    <span class="kw">public</span> <span class="cl">CheckoutService</span>(<span class="cl">PaymentGateway</span> paymentGateway) {
+        <span class="kw">this</span>.paymentGateway = paymentGateway;
+    }
+
+    <span class="kw">public void</span> <span class="fn">completeCheckout</span>(<span class="kw">double</span> totalAmount) {
+        paymentGateway.<span class="fn">processPayment</span>(totalAmount);
+    }
+}</pre>
+  </div>
+</div>
+
+<div class="content-block" id="sec-advanced">
+  <h2><span class="icon">🔬</span> DIP vs DI vs IoC</h2>
+  <div class="info-box">
+    <strong>💡 The Holy Trinity of Decoupling:</strong><br>
+    <br>
+    <strong>1. DIP (Dependency Inversion Principle):</strong> The <em>philosophy</em> that high levels shouldn't depend on low levels. Design your architecture with interfaces in the middle.<br>
+    <strong>2. IoC (Inversion of Control):</strong> The <em>pattern</em> where you relinquish control of creating objects and managing flow to an external framework or container.<br>
+    <strong>3. DI (Dependency Injection):</strong> The <em>technique</em> used to actually fulfill DIP. Instead of writing <code>new Object()</code>, you pass the object via a constructor. Spring Framework is the ultimate DI/IoC engine.
+  </div>
+  <p>Without DIP, writing Unit Tests for <code>CheckoutService</code> would require interacting with the real Stripe API, turning them into slow, flaky Integration Tests. With DIP, you can easily inject a <code>MockPaymentGateway</code> in your test suite.</p>
+</div>
+
+<div class="content-block" id="sec-exercises">
+  <h2><span class="icon">🏋️</span> Exercises</h2>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)">
+      <span>🟢 Beginner: The Hardcoded Logger</span>
+      <span class="ex-diff diff-beginner" style="background:rgba(34,197,94,.15);color:#4ade80;">Beginner</span>
+    </div>
+    <div class="exercise-body">
+      <p>A <code>UserService</code> creates a <code>new FileLogger("/tmp/log.txt")</code> in its constructor to log user logins. Refactor this using constructor injection and a <code>Logger</code> interface so the service can log to the Console or a File depending on configuration.</p>
+    </div>
+  </div>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)">
+      <span>🟡 Intermediate: Hexagonal Architecture Prep</span>
+      <span class="ex-diff diff-intermediate" style="background:rgba(245,166,35,.15);color:var(--amber);">Intermediate</span>
+    </div>
+    <div class="exercise-body">
+      <p>Clean Architecture and Hexagonal Architecture rely entirely on DIP. Design a Domain-driven structure where the core Domain packages define Repository <em>interfaces</em>, and an outer Infrastructure package provides the MongoDB and PostgreSQL <em>implementations</em>.</p>
+    </div>
+  </div>
+</div>
+
+<div class="content-block" id="sec-interview">
+  <h2><span class="icon">💼</span> Interview Insight</h2>
+  <div class="tip-box">
+    <strong>🎯 Nailing the explanation:</strong><br>
+    "DIP means separating the 'What to do' from the 'How to do it'. It allows us to swap out database vendors, external API clients, or UI frameworks without touching the core business logic. It's also the mechanic that makes robust Unit Testing possible."
+  </div>
+  <p>In an interview, anytime an interviewer asks how your service talks to a database, you should explicitly state: <em>"The service will depend on a Repository abstraction. The concrete database client (Hibernate, raw SQL) will be injected by our DI container. This inverts the dependency, ensuring our business rules aren't tightly coupled to the persistence layer."</em></p>
+</div>
+
+<div class="next-lesson" onclick="openLesson('singleton')">
+  <div><div class="next-label">Next Lesson</div><div class="next-title">Singleton Pattern →</div></div>
+  <span class="next-arrow">→</span>
+</div>
+  `,
+},
+
+lsp:{
+  sections:[
+    {id:'concept',title:'Concept'},
+    {id:'mental',title:'Mental Model'},
+    {id:'example',title:'Code Example'},
+    {id:'advanced',title:'Advanced Mechanics'},
+    {id:'pitfalls',title:'Pitfalls'},
+    {id:'exercises',title:'Exercises'},
+    {id:'interview',title:'Interview Insight'},
+  ],
+  html:`
+<h1>Liskov Substitution Principle</h1>
+<div class="lesson-meta-row">
+  <span class="difficulty diff-intermediate">Intermediate</span>
+  <span class="time-badge">⏱ 15 min read</span>
+  <span class="cat-badge cat-solid">SOLID</span>
+</div>
+
+<div class="content-block" id="sec-concept">
+  <h2><span class="icon">💡</span> Concept</h2>
+  <p><strong>Definition:</strong> Objects of a superclass shall be replaceable with objects of its subclasses without breaking the application.</p>
+  <p>Introduced by Barbara Liskov in 1987, LSP defines what it actually means to use inheritance correctly. It dictates that a subclass must <strong>honor the behavioral contract</strong> of its parent class. If a function expects a <code>List</code>, passing an <code>ArrayList</code> or a <code>LinkedList</code> should work flawlessly without the function needing to know which one it received.</p>
+  <div class="analogy-box">
+    <strong>🦆 Analogy:</strong> The "Duck Test". If it looks like a duck and quacks like a duck, but needs batteries... you probably have the wrong abstraction. If your code expects a real duck but is handed a mechanical duck that throws an exception when <code>fly()</code> is called, the application breaks. The mechanical duck violated Liskov Substitution.
+  </div>
+</div>
+
+<div class="content-block" id="sec-mental">
+  <h2><span class="icon">🧠</span> Mental Model</h2>
+  <div class="mental-model">
+    <h4>Design by Contract</h4>
+    <p>LSP is best understood through the lens of <strong>Design by Contract</strong>. Every method exposed by a base class comes with implicit and explicit promises:</p>
+    <ul>
+      <li><strong>Preconditions:</strong> What must be true before the method is called (e.g., "ID cannot be null"). A subclass <em>cannot strengthen</em> preconditions (it cannot suddenly demand "ID must be > 0").</li>
+      <li><strong>Postconditions:</strong> What is guaranteed after the method runs (e.g., "User is saved to DB"). A subclass <em>cannot weaken</em> postconditions (it cannot decide to just cache the user in memory instead).</li>
+      <li><strong>Invariants:</strong> What must remain universally true about the class (e.g., "Balance is always >= 0"). A subclass <em>cannot violate</em> invariants.</li>
+    </ul>
+    <p>If you have to sprinkle your code with <code>if (obj instanceof SubClass)</code> to prevent errors, you have violated LSP.</p>
+  </div>
+</div>
+
+<div class="content-block" id="sec-example">
+  <h2><span class="icon">⚡</span> Code Example</h2>
+  <p>The most famous LSP violation is the <strong>Rectangle-Square problem</strong>. Mathematically, a square is a rectangle. But structurally in code, they have different behavioral constraints.</p>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Java — BAD (LSP Violation)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="kw">public class</span> <span class="cl">Rectangle</span> {
+    <span class="kw">protected int</span> width, height;
+    
+    <span class="kw">public void</span> <span class="fn">setWidth</span>(<span class="kw">int</span> width) { <span class="kw">this</span>.width = width; }
+    <span class="kw">public void</span> <span class="fn">setHeight</span>(<span class="kw">int</span> height) { <span class="kw">this</span>.height = height; }
+    <span class="kw">public int</span> <span class="fn">getArea</span>() { <span class="kw">return</span> width * height; }
+}
+
+<span class="cm">// Square inherits from Rectangle, which seems logical...</span>
+<span class="kw">public class</span> <span class="cl">Square</span> <span class="kw">extends</span> <span class="cl">Rectangle</span> {
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">setWidth</span>(<span class="kw">int</span> width) {
+        <span class="kw">super</span>.<span class="fn">setWidth</span>(width);
+        <span class="kw">super</span>.<span class="fn">setHeight</span>(width); <span class="cm">// Force them to be equal</span>
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">setHeight</span>(<span class="kw">int</span> height) {
+        <span class="kw">super</span>.<span class="fn">setHeight</span>(height);
+        <span class="kw">super</span>.<span class="fn">setWidth</span>(height); <span class="cm">// Force them to be equal</span>
+    }
+}
+
+<span class="cm">// The Client Code pointing out the violation</span>
+<span class="kw">public void</span> <span class="fn">resizeRectangle</span>(<span class="cl">Rectangle</span> rect) {
+    rect.<span class="fn">setWidth</span>(<span class="nn">5</span>);
+    rect.<span class="fn">setHeight</span>(<span class="nn">10</span>);
+    <span class="cm">// The contract says width=5, height=10, Area should be 50.</span>
+    <span class="cm">// But if a Square is passed, the area becomes 100! The contract is broken.</span>
+    <span class="cl">System</span>.out.<span class="fn">println</span>(rect.<span class="fn">getArea</span>() == <span class="nn">50</span>); 
+}</pre>
+  </div>
+  
+  <p><strong>The Fix:</strong> Break the false hierarchy. A Square is not a substitute for a Rectangle regarding mutability. Instead, abstract the <em>behavior</em> rather than the <em>data structure</em>.</p>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Java — GOOD (LSP Applied)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm">// ✅ GOOD — Define shared behavioral contracts</span>
+<span class="kw">public interface</span> <span class="cl">Shape</span> {
+    <span class="kw">int</span> <span class="fn">getArea</span>();
+}
+
+<span class="kw">public class</span> <span class="cl">Rectangle</span> <span class="kw">implements</span> <span class="cl">Shape</span> {
+    <span class="kw">private int</span> width, height;
+    <span class="kw">public</span> <span class="cl">Rectangle</span>(<span class="kw">int</span> w, <span class="kw">int</span> h) { width = w; height = h; }
+    <span class="an">@Override</span> <span class="kw">public int</span> <span class="fn">getArea</span>() { <span class="kw">return</span> width * height; }
+}
+
+<span class="kw">public class</span> <span class="cl">Square</span> <span class="kw">implements</span> <span class="cl">Shape</span> {
+    <span class="kw">private int</span> side;
+    <span class="kw">public</span> <span class="cl">Square</span>(<span class="kw">int</span> side) { <span class="kw">this</span>.side = side; }
+    <span class="an">@Override</span> <span class="kw">public int</span> <span class="fn">getArea</span>() { <span class="kw">return</span> side * side; }
+}
+
+<span class="cm">// Now, clients depend on the Shape contract, which only guarantees getArea()</span>
+<span class="kw">public void</span> <span class="fn">printArea</span>(<span class="cl">Shape</span> s) {
+    <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Area: "</span> + s.<span class="fn">getArea</span>()); <span class="cm">// Always works</span>
+}</pre>
+  </div>
+</div>
+
+<div class="content-block" id="sec-advanced">
+  <h2><span class="icon">🔬</span> Advanced Mechanics: Immutability & Exceptions</h2>
+  <ul>
+    <li><strong>Immutability Solves LSP:</strong> If <code>Rectangle</code> and <code>Square</code> in the previous example were immutable (no setters, just getters), the LSP violation disappears! You can safely substitute an immutable Square for an immutable Rectangle because you can't mutate the width independently anyway.</li>
+    <li><strong>Exception Signatures:</strong> If a base class method throws <code>IOException</code>, a subclass overriding it can throw <code>FileNotFoundException</code> (a subclass of IOException), but it cannot throw a completely new checked exception like <code>SQLException</code>. This would force the client to handle exceptions it never agreed to.</li>
+  </ul>
+</div>
+
+<div class="content-block" id="sec-pitfalls">
+  <h2><span class="icon">⚠️</span> Pitfalls & Trade-offs</h2>
+  <div class="warn-box">
+    <strong>⚠️ Type Checking in Polymorphic Code</strong><br>
+    The moment you write <code>if (object instanceof SubType)</code> or try to downcast an abstraction, you are waving a massive red flag that LSP is being violated. Your objects are failing to substitute smoothly.
+  </div>
+  <ul>
+    <li><strong>Throwing <code>UnsupportedOperationException</code>:</strong> A classic LSP violation. E.g. Java's <code>Collections.unmodifiableList()</code> returns a List where <code>add()</code> throws an exception. This actually violates LSP, but Java made a pragmatic trade-off rather than doubling the size of the Collections hierarchy (MutableList vs ImmutableList).</li>
+    <li><strong>"IS-A" is not enough:</strong> Inheritance must model "IS-SUBSTITUTABLE-FOR", not just real-world "IS-A". A Penguin IS-A Bird, but a Penguin is NOT a substitutable FlyingBird.</li>
+  </ul>
+</div>
+
+<div class="content-block" id="sec-exercises">
+  <h2><span class="icon">🏋️</span> Exercises</h2>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)">
+      <span>🟢 Beginner: The Flightless Bird</span>
+      <span class="ex-diff diff-beginner" style="background:rgba(34,197,94,.15);color:#4ade80;">Beginner</span>
+    </div>
+    <div class="exercise-body">
+      <p>Given a <code>Bird</code> superclass with a <code>fly()</code> method, and a <code>Penguin</code> subclass that overrides <code>fly()</code> to throw an <code>UnsupportedOperationException</code>. Refactor this using interfaces (e.g., <code>Flyable</code>) to respect LSP.</p>
+    </div>
+  </div>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)">
+      <span>🟡 Intermediate: The Caching DB</span>
+      <span class="ex-diff diff-intermediate" style="background:rgba(245,166,35,.15);color:var(--amber);">Intermediate</span>
+    </div>
+    <div class="exercise-body">
+      <p>A <code>DatabaseRepository</code> class defines a <code>save(Entity)</code> method that guarantees writing to disk synchronously. A subclass <code>AsyncCacheRepository</code> overrides <code>save(Entity)</code> to fire a fire-and-forget background thread. How does this violate postconditions? Fix it.</p>
+    </div>
+  </div>
+</div>
+
+<div class="content-block" id="sec-interview">
+  <h2><span class="icon">💼</span> Interview Insight</h2>
+  <div class="tip-box">
+    <strong>🎯 Nailing the explanation:</strong><br>
+    "LSP means we must preserve behavioral contracts. It prevents the need to check the actual concrete type of an object before using it. If I ask for a List, I shouldn't have to worry that 'add()' will randomly crash depending on the subclass I was given."
+  </div>
+  <p>In interviews, when an interviewer asks "Why shouldn't you inherit <code>Stack</code> from <code>Vector</code>?" (like Java 1.0 famously did), your answer should point directly to LSP: "A Stack exposes LIFO operations (push, pop), but vector exposes random access (insertAt). Inheriting from Vector means a Stack can be mutated in the middle, violating its invariant. You should use composition, not inheritance."</p>
+</div>
+
+<div class="next-lesson" onclick="openLesson('isp')">
+  <div><div class="next-label">Next Lesson</div><div class="next-title">Interface Segregation Principle →</div></div>
+  <span class="next-arrow">→</span>
+</div>
+  `,
+},
+
+ocp:{
+  sections:[
+    {id:'concept',title:'Concept'},
+    {id:'mental',title:'Mental Model'},
+    {id:'example',title:'Code Example'},
+    {id:'advanced',title:'Advanced Mechanics'},
+    {id:'pitfalls',title:'Pitfalls'},
+    {id:'exercises',title:'Exercises'},
+    {id:'interview',title:'Interview Insight'},
+  ],
+  html:`
+<h1>Open / Closed Principle</h1>
+<div class="lesson-meta-row">
+  <span class="difficulty diff-intermediate">Intermediate</span>
+  <span class="time-badge">⏱ 15 min read</span>
+  <span class="cat-badge cat-solid">SOLID</span>
+</div>
+
+<div class="content-block" id="sec-concept">
+  <h2><span class="icon">💡</span> Concept</h2>
+  <p><strong>Definition:</strong> Software entities (classes, modules, functions) should be <em>open for extension, but closed for modification</em>.</p>
+  <p>At its core, OCP is a mechanism for <strong>regression prevention</strong>. When new requirements arise, the safest way to implement them is by adding new code, rather than altering existing, heavily-tested code that already works in production.</p>
+  <div class="analogy-box">
+    <strong>🔌 Analogy:</strong> Think of a wall outlet. The electrical system behind the wall is "closed for modification" (you don't rewire the house to use a new device). But the outlet is "open for extension" (you plug in a blender, a TV, or a charger). We want our classes to provide identical "plug-in" points.
+  </div>
+  <p>To achieve this, we rely heavily on <strong>abstractions</strong> (interfaces and abstract classes) and <strong>polymorphism</strong>. Instead of hardcoding behavior conditionals (like massive switch statements), we define contracts that future implementations can fulfill.</p>
+</div>
+
+<div class="content-block" id="sec-mental">
+  <h2><span class="icon">🧠</span> Mental Model</h2>
+  <div class="mental-model">
+    <h4>The "Plugin Architecture" Mindset</h4>
+    <p>A senior engineer doesn't write code to solve today's requirements — they write code that creates a <em>socket</em> where tomorrow's requirements can be plugged in.</p>
+    <p>Look for the <strong>Axis of Change</strong>. If you expect a system to handle new types of data formats, new payment gateways, or new export functionalities, that axis must be abstracted. The core orchestrator becomes the environment, and the new requirements become plugins.</p>
+  </div>
+</div>
+
+<div class="content-block" id="sec-example">
+  <h2><span class="icon">⚡</span> Code Example</h2>
+  <p><strong>The Violation:</strong> Adding new behavior requires mutating the core class, thereby creating a risk of breaking existing functionality.</p>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Java — BAD (OCP Violation)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm">// ❌ BAD — To add a new discount type, we must edit this class</span>
+<span class="kw">public class</span> <span class="cl">DiscountCalculator</span> {
+    <span class="kw">public double</span> <span class="fn">calculateDiscount</span>(<span class="cl">String</span> customerType, <span class="kw">double</span> amount) {
+        <span class="kw">if</span> (customerType.<span class="fn">equals</span>(<span class="st">"REGULAR"</span>)) {
+            <span class="kw">return</span> amount * <span class="nn">0.05</span>;
+        } <span class="kw">else if</span> (customerType.<span class="fn">equals</span>(<span class="st">"PREMIUM"</span>)) {
+            <span class="kw">return</span> amount * <span class="nn">0.10</span>;
+        } <span class="kw">else if</span> (customerType.<span class="fn">equals</span>(<span class="st">"VIP"</span>)) { <span class="cm">// Need a new tier? Modify here!</span>
+            <span class="kw">return</span> amount * <span class="nn">0.20</span>;
+        }
+        <span class="kw">return</span> <span class="nn">0</span>;
+    }
+}</pre>
+  </div>
+  
+  <p><strong>The Fix:</strong> Depend on an abstraction. New discount rules are added as new classes without modifying the core orchestrator.</p>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Java — GOOD (OCP Applied)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm">// ✅ GOOD — Open for extension, closed for modification</span>
+
+<span class="cm">// 1. The abstraction (The Socket)</span>
+<span class="kw">public interface</span> <span class="cl">DiscountRule</span> {
+    <span class="kw">double</span> <span class="fn">calculate</span>(<span class="kw">double</span> amount);
+}
+
+<span class="cm">// 2. The extensions (The Plugins)</span>
+<span class="kw">public class</span> <span class="cl">RegularDiscount</span> <span class="kw">implements</span> <span class="cl">DiscountRule</span> {
+    <span class="kw">public double</span> <span class="fn">calculate</span>(<span class="kw">double</span> amount) { <span class="kw">return</span> amount * <span class="nn">0.05</span>; }
+}
+
+<span class="kw">public class</span> <span class="cl">PremiumDiscount</span> <span class="kw">implements</span> <span class="cl">DiscountRule</span> {
+    <span class="kw">public double</span> <span class="fn">calculate</span>(<span class="kw">double</span> amount) { <span class="kw">return</span> amount * <span class="nn">0.10</span>; }
+}
+
+<span class="cm">// 3. The closed core (The Orchestrator)</span>
+<span class="kw">public class</span> <span class="cl">DiscountCalculator</span> {
+    <span class="kw">public double</span> <span class="fn">calculateDiscount</span>(<span class="cl">DiscountRule</span> rule, <span class="kw">double</span> amount) {
+        <span class="kw">return</span> rule.<span class="fn">calculate</span>(amount);
+    }
+}
+
+<span class="cm">// Need a VIP tier? We NEVER touch DiscountCalculator or existing rules.</span>
+<span class="cm">// We simply author a new class entirely in isolation:</span>
+<span class="kw">public class</span> <span class="cl">VipDiscount</span> <span class="kw">implements</span> <span class="cl">DiscountRule</span> {
+    <span class="kw">public double</span> <span class="fn">calculate</span>(<span class="kw">double</span> amount) { <span class="kw">return</span> amount * <span class="nn">0.20</span>; }
+}</pre>
+  </div>
+</div>
+
+<div class="content-block" id="sec-advanced">
+  <h2><span class="icon">🔬</span> Advanced Mechanics: OCP in Modern Architecture</h2>
+  <p>OCP forms the backbone of several critical modern software design paradigms:</p>
+  <ul>
+    <li><strong>Strategy Pattern:</strong> The example above is precisely the Strategy Pattern. OCP is the <em>principle</em>, Strategy is a <em>pattern</em> that enforces it.</li>
+    <li><strong>Dependency Injection (DI):</strong> In Spring Boot, you define interfaces for your application components. By configuring the DI container to inject a new concrete bean, you extend the application's behavior without rewriting the consuming service.</li>
+    <li><strong>Event-Driven Architectures:</strong> By emitting Domain Events (e.g., <code>OrderPlacedEvent</code>), an orchestrator class is closed for modification. New resulting actions (like updating a search index or sending a webhook) are built by simply adding new listeners (extensions).</li>
+  </ul>
+</div>
+
+<div class="content-block" id="sec-pitfalls">
+  <h2><span class="icon">⚠️</span> Pitfalls & Trade-offs</h2>
+  <div class="warn-box">
+    <strong>⚠️ The Abstract Explosion (Premature Abstraction)</strong><br>
+    Trying to follow OCP for <em>everything</em> leads to "Enterprise Java Syndrome" — where every domain entity is hidden behind 5 layers of interfaces just in case it needs to change.
+  </div>
+  <ul>
+    <li><strong>YAGNI (You Aren't Gonna Need It):</strong> Do not build plugin slots for variations that do not exist yet. Build your first iteration concretely. When the second variation arrives, <em>then</em> refactor into an abstraction.</li>
+    <li><strong>Leaky Abstractions:</strong> If you add a new plugin class, but its requirements force you to change the method signature of the interface, the interface has leaked implementation details. The core is no longer closed.</li>
+  </ul>
+</div>
+
+<div class="content-block" id="sec-exercises">
+  <h2><span class="icon">🏋️</span> Exercises</h2>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)">
+      <span>🟢 Beginner: The Exporter</span>
+      <span class="ex-diff diff-beginner" style="background:rgba(34,197,94,.15);color:#4ade80;">Beginner</span>
+    </div>
+    <div class="exercise-body">
+      <p>Identify an OCP violation in a <code>DocumentExporter</code> class containing a method <code>export(Document doc, String format)</code> that uses a switch statement on <code>"PDF"</code>, <code>"HTML"</code>, and <code>"TXT"</code>. Refactor it using an <code>Exporter</code> interface.</p>
+    </div>
+  </div>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)">
+      <span>🟡 Intermediate: The Routing Engine</span>
+      <span class="ex-diff diff-intermediate" style="background:rgba(245,166,35,.15);color:var(--amber);">Intermediate</span>
+    </div>
+    <div class="exercise-body">
+      <p>Design an API Router that directs incoming HTTP requests. Ensure that adding a new route (e.g., <code>/auth</code> vs <code>/users</code>) does not require modifying the central dispatch engine. Use a mapping registry pattern.</p>
+    </div>
+  </div>
+</div>
+
+<div class="content-block" id="sec-interview">
+  <h2><span class="icon">💼</span> Interview Insight</h2>
+  <div class="tip-box">
+    <strong>🎯 Nailing the explanation:</strong><br>
+    "OCP protects production stability. When we write new features as net-new classes extending an abstraction, we eliminate the risk of introducing syntax bugs, logic errors, or side-effects into code that is already working and tested."
+  </div>
+  <p>In system design, OCP often appears when discussing Extensibility. If an interviewer asks "How do we support 50 different third-party integrations in the future?", you respond with: "We define a standard Integration Interface in our core logic. Third parties are implemented as independent adapters that fulfill that contract, ensuring the core engine is closed to modification."</p>
+</div>
+
+<div class="next-lesson" onclick="openLesson('lsp')">
+  <div><div class="next-label">Next Lesson</div><div class="next-title">Liskov Substitution Principle →</div></div>
+  <span class="next-arrow">→</span>
+</div>
+  `,
+},
+
+srp:{
+  sections:[
+    {id:'concept',title:'Concept: The Actor Paradigm'},
+    {id:'mental',title:'Mental Model'},
+    {id:'example',title:'Code Example'},
+    {id:'advanced',title:'Architecture & Cohesion'},
+    {id:'pitfalls',title:'Pitfalls'},
+    {id:'exercises',title:'Exercises'},
+    {id:'interview',title:'Interview Insight'},
+  ],
+  html:`
+<h1>Single Responsibility Principle</h1>
+<div class="lesson-meta-row">
+  <span class="difficulty diff-beginner">Beginner</span>
+  <span class="time-badge">⏱ 15 min read</span>
+  <span class="cat-badge cat-solid">SOLID</span>
+</div>
+
+<div class="content-block" id="sec-concept">
+  <h2><span class="icon">💡</span> Concept: The Actor Paradigm</h2>
+  <p><strong>Definition:</strong> A class should have one, and only one, reason to change.</p>
+  <p>SRP is arguably the most misunderstood principle in software engineering. The common misconception is that a class should "only do one thing." This overly simplistic translation leads to catastrophic over-fragmentation. A class that calculates employee payroll might execute 50 distinct mathematical operations, but it can still perfectly fulfill SRP.</p>
+  <p>Robert C. Martin's clarified, formal definition is: <strong>"A module should be responsible to one, and only one, actor."</strong></p>
+  <p>An actor is a stakeholder—a person or a group—who might request a change to the system. If your class handles core business logic (governed by product management) and also defines how that data is pushed to an external database (governed by the DBA), your class is beholden to two competing actors. That is an SRP violation.</p>
+  <div class="analogy-box">
+    <strong>🔧 Analogy:</strong> Think of a corporate org chart. You do not ask the Head of Marketing to tune the production database. Code is exactly the same. When a single class serves two distinct organizational departments, a feature requested by Marketing can easily inject a regression into the Database persistence logic. SRP isolates the blast radius of organizational changes.
+  </div>
+</div>
+
+<div class="content-block" id="sec-mental">
+  <h2><span class="icon">🧠</span> Mental Model</h2>
+  <div class="mental-model">
+    <h4>Axes of Change & Cohesion</h4>
+    <p>To audit a class, ask yourself: <strong>"If the requirements for X change, does this class change?"</strong> Repeat this for every concern the class touches. The answers map the class's <em>Axes of Change</em>. Finding multiple axes means you have found multiple actors.</p>
+    <p>SRP relies heavily on <strong>Cohesion</strong>. A universally cohesive class uses the same set of instance variables across all of its methods. If a class has three methods that exclusively use <code>variableA</code>, and three other methods that exclusively use <code>variableB</code>, that class is not cohesive. It is artificially glued together and is begging to be split along those variable lines.</p>
+  </div>
+</div>
+
+<div class="content-block" id="sec-example">
+  <h2><span class="icon">⚡</span> Code Example</h2>
+  <p>Let's examine the classic <code>UserService</code>. In junior-level code, this class often becomes a "God Object" because the developer mistakenly assumes "Everything related to a User goes here."</p>
+  
+  <p><strong>The Violation:</strong> This class changes if (1) Validation rules change, (2) the Database schema changes, or (3) the Email provider changes. It serves three entirely distinct actors.</p>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Java — BAD (SRP Violation)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm">// ❌ BAD — Three Axes of Change</span>
+<span class="kw">public class</span> <span class="cl">UserService</span> {
+    <span class="kw">public void</span> <span class="fn">registerUser</span>(<span class="cl">User</span> user) {
+        <span class="cm">// Actor 1: Product Team (Business/Validation Logic)</span>
+        <span class="kw">if</span> (user.getPassword().<span class="fn">length</span>() < <span class="nn">8</span>) {
+            <span class="kw">throw new</span> <span class="cl">ValidationException</span>(<span class="st">"Password too short"</span>);
+        }
+
+        <span class="cm">// Actor 2: DBA / Infrastructure Team (Persistence)</span>
+        <span class="cl">String</span> sql = <span class="st">"INSERT INTO users (username, password) VALUES (?, ?)"</span>;
+        <span class="cm">// ... execute raw SQL connection</span>
+
+        <span class="cm">// Actor 3: Marketing Team (Communication)</span>
+        <span class="cl">SmtpClient</span> smtp = <span class="kw">new</span> <span class="cl">SmtpClient</span>(<span class="st">"smtp.gmail.com"</span>);
+        smtp.<span class="fn">send</span>(user.getEmail(), <span class="st">"Welcome!"</span>, <span class="st">"Thanks for joining."</span>);
+    }
+}</pre>
+  </div>
+  
+  <p><strong>The Fix:</strong> We split the architecture along actor boundaries. The <code>UserService</code> is stripped of infrastructure knowledge and becomes a pure orchestrator of business logic, delegating persistence and communication to isolated domain services.</p>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Java — GOOD (SRP Applied)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm">// ✅ GOOD — Each class is responsible to exactly one actor.</span>
+
+<span class="cm">// 1. Responsible ONLY to the DBA (Persistence)</span>
+<span class="kw">public class</span> <span class="cl">UserRepository</span> {
+    <span class="kw">public void</span> <span class="fn">save</span>(<span class="cl">User</span> user) {
+        <span class="cm">// Executes SQL and handles ResultSet mapping</span>
+    }
+}
+
+<span class="cm">// 2. Responsible ONLY to Marketing/Comms (Email format and transit)</span>
+<span class="kw">public class</span> <span class="cl">EmailService</span> {
+    <span class="kw">public void</span> <span class="fn">sendWelcomeEmail</span>(<span class="cl">User</span> user) {
+        <span class="cm">// Handles SMTP configuration and HTML templates</span>
+    }
+}
+
+<span class="cm">// 3. Responsible ONLY to the Product Team (Business Rules)</span>
+<span class="kw">public class</span> <span class="cl">UserService</span> {
+    <span class="cm">// Dependencies are injected, totally isolating the business logic</span>
+    <span class="kw">private final</span> <span class="cl">UserRepository</span> repository;
+    <span class="kw">private final</span> <span class="cl">EmailService</span> emailService;
+
+    <span class="kw">public</span> <span class="cl">UserService</span>(<span class="cl">UserRepository</span> repo, <span class="cl">EmailService</span> comms) {
+        <span class="kw">this</span>.repository = repo;
+        <span class="kw">this</span>.emailService = comms;
+    }
+
+    <span class="kw">public void</span> <span class="fn">registerUser</span>(<span class="cl">User</span> user) {
+        <span class="cm">// Business Logic constraint validation</span>
+        <span class="kw">if</span> (user.getPassword().<span class="fn">length</span>() < <span class="nn">8</span>) {
+            <span class="kw">throw new</span> <span class="cl">ValidationException</span>(<span class="st">"Password too short"</span>);
+        }
+        
+        repository.<span class="fn">save</span>(user);
+        emailService.<span class="fn">sendWelcomeEmail</span>(user);
+    }
+}</pre>
+  </div>
+</div>
+
+<div class="content-block" id="sec-advanced">
+  <h2><span class="icon">🔬</span> Advanced Mechanics: SRP at the Architecture Level</h2>
+  <p>Top-tier engineers apply SRP far beyond the microscopic confines of a single class. It dictates macro-architecture:</p>
+  <ul>
+    <li><strong>Microservices & Bounded Contexts:</strong> A microservice boundary is defined primarily by SRP. If an "Order Service" also handles calculating warehouse shipping routes, it violates SRP at the system level. Because shipping and orders change dynamically based on different real-world factors, coupling them creates painful, fragile distributed deployments.</li>
+    <li><strong>CQRS (Command Query Responsibility Segregation):</strong> The ultimate manifestation of SRP at scale. By explicitly separating the code that <em>modifies</em> state (Commands) from the code that <em>reads</em> state (Queries), CQRS acknowledges that reading and writing data change for completely different operational reasons and demand vastly different infrastructure scaling parameters.</li>
+  </ul>
+</div>
+
+<div class="content-block" id="sec-pitfalls">
+  <h2><span class="icon">⚠️</span> Pitfalls & Trade-offs</h2>
+  <div class="warn-box">
+    <strong>⚠️ Beware of Shotgun Surgery</strong><br>
+    Overzealous application of SRP leads directly to <em>fragmentation</em>. If you split a single, highly-cohesive workflow into 10 tiny pieces, and a single product feature request forces you to open and modify all 10 files simultaneously... you have failed. This anti-pattern is known as "Shotgun Surgery."
+  </div>
+  <ul>
+    <li><strong>YAGNI Interaction:</strong> Do not split a class into three distinct pieces unless those three axes of change <em>actually exist</em> in your real-world product roadmap. Separating classes to anticipate hypothetical actors leads to sterile, premature complexity. Stick to the pragmatic reality.</li>
+  </ul>
+</div>
+
+<div class="content-block" id="sec-exercises">
+  <h2><span class="icon">🏋️</span> Exercises</h2>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)">
+      <span>🟢 Beginner: The Swiss Army Parser</span>
+      <span class="ex-diff diff-beginner" style="background:rgba(34,197,94,.15);color:#4ade80;">Beginner</span>
+    </div>
+    <div class="exercise-body">
+      <p>Identify the distinct actors in a <code>JsonParser</code> class that reads a file from disk, parses the JSON into Java objects, and prints error logs to the console using <code>System.out.println</code>. Describe how you would refactor it.</p>
+    </div>
+  </div>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)">
+      <span>🟡 Intermediate: Facades vs God Objects</span>
+      <span class="ex-diff diff-intermediate" style="background:rgba(245,166,35,.15);color:var(--amber);">Intermediate</span>
+    </div>
+    <div class="exercise-body">
+      <p>Evaluate an <code>OrderCheckoutFacade</code> that calls <code>InventoryService</code>, <code>PaymentService</code>, and <code>NotificationService</code>. Does the Facade inherently violate SRP? Why or why not?</p>
+      <p><em>Hint: Consider what actor owns the orchestration sequence itself versus the execution of the sub-tasks.</em></p>
+    </div>
+  </div>
+</div>
+
+<div class="content-block" id="sec-interview">
+  <h2><span class="icon">💼</span> Interview Insight</h2>
+  <div class="tip-box">
+    <strong>🎯 The Golden Answer:</strong><br>
+    "When I discuss SRP, I prefer not to say 'a class does one thing.' I frame it entirely around organizational structure. SRP protects engineering teams from merge conflicts and unintended side-effects. By ensuring each class serves only one business stakeholder, we surgically isolate the blast radius of any given feature request."
+  </div>
+  <p>If an interviewer asks "When would you intentionally violate SRP?", you can intelligently discuss the <em>Active Record</em> pattern (where business logic and data access are intentionally unified for rapid prototyping, famously in Ruby on Rails) or high-performance scenarios where abstractions and polymorphic boundaries introduce unacceptable memory locality latency.</p>
+</div>
+
+<div class="next-lesson" onclick="openLesson('ocp')">
+  <div><div class="next-label">Next Lesson</div><div class="next-title">Open / Closed Principle →</div></div>
+  <span class="next-arrow">→</span>
+</div>`
+},
+
+singleton:{
+  sections:[
+    {id:'concept',title:'Concept'},
+    {id:'mental',title:'Mental Model'},
+    {id:'implementations',title:'Implementations'},
+    {id:'pitfalls',title:'Pitfalls'},
+    {id:'exercises',title:'Exercises'},
+    {id:'interview',title:'Interview Insight'},
+  ],
+  html:`
+<h1>Singleton Pattern</h1>
+<div class="lesson-meta-row">
+  <span class="difficulty diff-beginner">Beginner</span>
+  <span class="time-badge">⏱ 12 min read</span>
+  <span class="cat-badge cat-creational">Creational</span>
+</div>
+
+<div class="content-block" id="sec-concept">
+  <h2><span class="icon">💡</span> Concept</h2>
+  <p><strong>Intent:</strong> Ensure a class has only one instance, and provide a global point of access to it.</p>
+  <p>Singleton solves a specific problem: some resources should only ever exist once — a database connection pool, a configuration manager, a logging framework. Creating multiple instances would cause bugs (multiple log files, conflicting config) or waste resources (100 connection pools).</p>
+  <div class="analogy-box">
+    <strong>🌍 Analogy:</strong> There is only one President of a country at a time. When someone asks "who's the president?", they always get the same person — there's one global instance. Singleton is the software equivalent: no matter how many times you call getInstance(), you get the same object.
+  </div>
+  <p>Singleton has <strong>two guarantees</strong>: (1) Only one instance is created. (2) A single global access point is provided.</p>
+</div>
+
+<div class="content-block" id="sec-mental">
+  <h2><span class="icon">🧠</span> Mental Model</h2>
+  <div class="mental-model">
+    <h4>Think of it as a controlled constructor</h4>
+    <p>The key mechanism: make the constructor <code>private</code> so no one can call <code>new Singleton()</code> from outside. The class itself creates and holds the single instance. The only way in is through <code>getInstance()</code>.</p>
+    <p><strong>Three moving parts:</strong> private constructor + private static instance + public static getInstance().</p>
+  </div>
+</div>
+
+<div class="content-block" id="sec-implementations">
+  <h2><span class="icon">⚡</span> Implementations (4 Ways)</h2>
+  
+  <h3>1. Eager Initialization (simplest, thread-safe)</h3>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Java — Eager Initialization</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="kw">public class</span> <span class="cl">ConfigManager</span> {
+    <span class="cm">// Instance created at class load time — always thread-safe</span>
+    <span class="kw">private static final</span> <span class="cl">ConfigManager</span> INSTANCE = <span class="kw">new</span> <span class="cl">ConfigManager</span>();
+
+    <span class="kw">private</span> <span class="cl">ConfigManager</span>() {
+        <span class="cm">// load config from file</span>
+    }
+
+    <span class="kw">public static</span> <span class="cl">ConfigManager</span> <span class="fn">getInstance</span>() {
+        <span class="kw">return</span> INSTANCE;
+    }
+
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">get</span>(<span class="cl">String</span> key) { <span class="cm">/* ... */</span> <span class="kw">return null</span>; }
+}</pre>
+  </div>
+  <p><strong>Pro:</strong> Simple, thread-safe. <strong>Con:</strong> Instance created even if never used (eager loading).</p>
+
+  <h3>2. Lazy Initialization with Double-Checked Locking (production standard)</h3>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Java — Double-Checked Locking (DCL)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="kw">public class</span> <span class="cl">DatabasePool</span> {
+    <span class="cm">// volatile prevents instruction reordering in multi-threaded context</span>
+    <span class="kw">private static volatile</span> <span class="cl">DatabasePool</span> instance;
+
+    <span class="kw">private</span> <span class="cl">DatabasePool</span>() { <span class="cm">/* connect to DB */</span> }
+
+    <span class="kw">public static</span> <span class="cl">DatabasePool</span> <span class="fn">getInstance</span>() {
+        <span class="kw">if</span> (instance == <span class="kw">null</span>) {            <span class="cm">// Check 1: avoid sync on every call</span>
+            <span class="kw">synchronized</span> (<span class="cl">DatabasePool</span>.<span class="kw">class</span>) {
+                <span class="kw">if</span> (instance == <span class="kw">null</span>) {  <span class="cm">// Check 2: prevent duplicate init</span>
+                    instance = <span class="kw">new</span> <span class="cl">DatabasePool</span>();
+                }
+            }
+        }
+        <span class="kw">return</span> instance;
+    }
+}</pre>
+  </div>
+  <div class="info-box"><strong>⚠️ volatile is mandatory.</strong> Without it, the JVM can reorder instructions: another thread might see a non-null but incompletely constructed object. <code>volatile</code> ensures a happens-before relationship.</div>
+
+  <h3>3. Static Inner Class / Holder (BEST — preferred in production)</h3>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Java — Initialization-on-Demand Holder (IODH)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="kw">public class</span> <span class="cl">Logger</span> {
+    <span class="kw">private</span> <span class="cl">Logger</span>() {}
+
+    <span class="cm">// Inner class is only loaded when getInstance() is called</span>
+    <span class="cm">// Class loading is inherently thread-safe — guaranteed by JVM spec</span>
+    <span class="kw">private static class</span> <span class="cl">Holder</span> {
+        <span class="kw">private static final</span> <span class="cl">Logger</span> INSTANCE = <span class="kw">new</span> <span class="cl">Logger</span>();
+    }
+
+    <span class="kw">public static</span> <span class="cl">Logger</span> <span class="fn">getInstance</span>() {
+        <span class="kw">return</span> <span class="cl">Holder</span>.INSTANCE;
+    }
+
+    <span class="kw">public void</span> <span class="fn">log</span>(<span class="cl">String</span> message) {
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"[LOG] "</span> + message);
+    }
+}
+
+<span class="cm">// Usage</span>
+<span class="cl">Logger</span>.<span class="fn">getInstance</span>().<span class="fn">log</span>(<span class="st">"Application started"</span>);</pre>
+  </div>
+  <p><strong>Why this is best:</strong> Lazy loading + thread safety + no synchronization overhead + no volatile. The JVM guarantees class initialization is thread-safe.</p>
+
+  <h3>4. Enum Singleton (most robust — handles serialization)</h3>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Java — Enum Singleton (Joshua Bloch's recommendation)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="kw">public enum</span> <span class="cl">AppConfig</span> {
+    INSTANCE;
+
+    <span class="kw">private final</span> <span class="cl">Properties</span> props = <span class="kw">new</span> <span class="cl">Properties</span>();
+
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">get</span>(<span class="cl">String</span> key) {
+        <span class="kw">return</span> props.<span class="fn">getProperty</span>(key);
+    }
+}
+
+<span class="cm">// Usage</span>
+<span class="cl">AppConfig</span>.INSTANCE.<span class="fn">get</span>(<span class="st">"db.url"</span>);</pre>
+  </div>
+  <p><strong>Why Enum?</strong> Java guarantees enums are serialization-safe and reflection-safe — the two ways regular Singletons can break. Joshua Bloch (Effective Java) recommends this approach.</p>
+</div>
+
+<div class="content-block" id="sec-pitfalls">
+  <h2><span class="icon">⚠️</span> Pitfalls</h2>
+  <div class="warn-box">
+    <strong>🚨 Singleton is often Anti-Pattern territory:</strong> Overuse creates hidden global state that makes unit testing a nightmare. If you find yourself making business logic classes singletons, stop — you likely need Dependency Injection instead.
+  </div>
+  <ul>
+    <li><strong>Breaking Singleton via Reflection:</strong> <code>Constructor.setAccessible(true)</code> bypasses private. Fix: throw exception in constructor if instance already exists.</li>
+    <li><strong>Breaking via Serialization:</strong> Deserialization creates a new instance. Fix: implement <code>readResolve()</code> to return the existing instance, or use enum.</li>
+    <li><strong>Multi-classloader environments:</strong> Each ClassLoader has its own class space — two classloaders = two instances. Not an issue in standard Spring apps.</li>
+    <li><strong>Testing difficulty:</strong> Global state = hard to mock. Use Dependency Injection with an interface; the DI container manages singleton scope via <code>@Singleton</code> annotation.</li>
+  </ul>
+  <div class="tip-box"><strong>💡 Modern Alternative:</strong> In Spring Boot, simply annotate with <code>@Service</code>, <code>@Repository</code>, or <code>@Component</code> — Spring manages beans as singletons by default. You rarely need to hand-write Singleton pattern in production Java.</div>
+</div>
+
+<div class="content-block" id="sec-exercises">
+  <h2><span class="icon">🏋️</span> Exercises</h2>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)">
+      <span>🟢 Beginner: Thread-safe Singleton</span>
+    </div>
+    <div class="exercise-body">
+      <p>Implement a thread-safe <code>CacheManager</code> Singleton using the static inner class pattern. It should store key-value pairs in a <code>ConcurrentHashMap</code>.</p>
+    </div>
+  </div>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)">
+      <span>🟡 Intermediate: Break and Fix</span>
+    </div>
+    <div class="exercise-body">
+      <p>Write code that breaks a standard Singleton using Reflection. Then fix the Singleton to prevent this attack by throwing an exception in the constructor when called twice.</p>
+    </div>
+  </div>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)">
+      <span>🔴 Advanced: Thread-Pool Singleton</span>
+    </div>
+    <div class="exercise-body">
+      <p>Design a <code>ConnectionPool</code> singleton that manages a fixed pool of 10 database connections, supports <code>getConnection()</code> and <code>releaseConnection()</code>, is thread-safe, and never creates more than 10 connections. Consider what happens when all connections are in use.</p>
+    </div>
+  </div>
+</div>
+
+<div class="content-block" id="sec-interview">
+  <h2><span class="icon">💼</span> Interview Insight</h2>
+  <div class="tip-box">
+    <strong>🎯 Interview Hot Topics:</strong><br>
+    "Implement thread-safe Singleton" → Answer with IODH or DCL, explain volatile.<br>
+    "What are the problems with Singleton?" → global state, testability, hidden coupling.<br>
+    "How does Spring manage singletons?" → ApplicationContext + bean scope, no manual Singleton code needed.
+  </div>
+  <p>Senior engineers will ask <em>why</em> you chose Singleton over dependency injection. The correct answer for most production systems: <strong>you wouldn't</strong> — you'd use a DI container. But understanding the raw implementation shows depth.</p>
+</div>
+
+<div class="next-lesson" onclick="openLesson('factory')">
+  <div><div class="next-label">Next Lesson</div><div class="next-title">Factory Method Pattern →</div></div>
+  <span class="next-arrow">→</span>
+</div>`
+},
+
+observer:{
+  sections:[
+    {id:'concept',title:'Concept'},
+    {id:'mental',title:'Mental Model'},
+    {id:'example',title:'Implementation'},
+    {id:'realworld',title:'Real World'},
+    {id:'pitfalls',title:'Pitfalls'},
+    {id:'exercises',title:'Exercises'},
+    {id:'interview',title:'Interview Insight'},
+  ],
+  html:`
+<h1>Observer Pattern</h1>
+<div class="lesson-meta-row">
+  <span class="difficulty diff-intermediate">Intermediate</span>
+  <span class="time-badge">⏱ 15 min read</span>
+  <span class="cat-badge cat-behavioral">Behavioral</span>
+</div>
+
+<div class="content-block" id="sec-concept">
+  <h2><span class="icon">💡</span> Concept</h2>
+  <p><strong>Intent:</strong> Define a one-to-many dependency between objects so that when one object changes state, all its dependents are notified and updated automatically.</p>
+  <p>The Observer pattern solves the notification problem: how do you let multiple parts of a system react to an event without tightly coupling the event source to every listener?</p>
+  <div class="analogy-box">
+    <strong>📰 Analogy:</strong> A newspaper subscription. The publisher (Subject) doesn't know who's reading — it just publishes. Subscribers (Observers) register their interest and receive updates. Adding a new subscriber doesn't change the publisher. Unsubscribing doesn't break anything. The publisher and subscribers are loosely coupled.
+  </div>
+  <p><strong>Key roles:</strong></p>
+  <ul>
+    <li><strong>Subject (Observable):</strong> Maintains a list of observers, provides attach/detach methods, notifies on state change.</li>
+    <li><strong>Observer:</strong> Defines the update interface all observers must implement.</li>
+    <li><strong>ConcreteSubject:</strong> Stores state, notifies observers when it changes.</li>
+    <li><strong>ConcreteObserver:</strong> Implements update() — reacts to the notification.</li>
+  </ul>
+</div>
+
+<div class="content-block" id="sec-mental">
+  <h2><span class="icon">🧠</span> Mental Model</h2>
+  <div class="mental-model">
+    <h4>Push vs Pull</h4>
+    <p><strong>Push model:</strong> Subject sends data to observers in the update() call. Simpler but observers get data they may not need.</p>
+    <p><strong>Pull model:</strong> update() is called with no/minimal data, observers call back on the subject to get what they need. More flexible but more complex.</p>
+    <p>Java's standard library uses push (passing the new value) in most implementations. Reactive frameworks (RxJava) use push with backpressure support.</p>
+  </div>
+</div>
+
+<div class="content-block" id="sec-example">
+  <h2><span class="icon">⚡</span> Full Implementation</h2>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Java — Observer Pattern (Stock Price Example)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm">// Observer interface — all listeners implement this</span>
+<span class="kw">public interface</span> <span class="cl">StockObserver</span> {
+    <span class="kw">void</span> <span class="fn">onPriceChange</span>(<span class="cl">String</span> symbol, <span class="kw">double</span> newPrice);
+}
+
+<span class="cm">// Subject interface — the thing being observed</span>
+<span class="kw">public interface</span> <span class="cl">StockSubject</span> {
+    <span class="kw">void</span> <span class="fn">subscribe</span>(<span class="cl">StockObserver</span> observer);
+    <span class="kw">void</span> <span class="fn">unsubscribe</span>(<span class="cl">StockObserver</span> observer);
+    <span class="kw">void</span> <span class="fn">notifyObservers</span>();
+}
+
+<span class="cm">// Concrete Subject</span>
+<span class="kw">public class</span> <span class="cl">StockMarket</span> <span class="kw">implements</span> <span class="cl">StockSubject</span> {
+    <span class="kw">private final</span> <span class="cl">List</span>&lt;<span class="cl">StockObserver</span>&gt; observers = <span class="kw">new</span> <span class="cl">CopyOnWriteArrayList</span>&lt;&gt;();
+    <span class="kw">private</span> <span class="cl">String</span> symbol;
+    <span class="kw">private double</span> price;
+
+    <span class="kw">public</span> <span class="cl">StockMarket</span>(<span class="cl">String</span> symbol, <span class="kw">double</span> initialPrice) {
+        <span class="kw">this</span>.symbol = symbol;
+        <span class="kw">this</span>.price = initialPrice;
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">subscribe</span>(<span class="cl">StockObserver</span> observer) {
+        observers.<span class="fn">add</span>(observer);
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">unsubscribe</span>(<span class="cl">StockObserver</span> observer) {
+        observers.<span class="fn">remove</span>(observer);
+    }
+
+    <span class="kw">public void</span> <span class="fn">setPrice</span>(<span class="kw">double</span> newPrice) {
+        <span class="kw">this</span>.price = newPrice;
+        <span class="fn">notifyObservers</span>();  <span class="cm">// Auto-notify all subscribers</span>
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">notifyObservers</span>() {
+        <span class="kw">for</span> (<span class="cl">StockObserver</span> o : observers) {
+            o.<span class="fn">onPriceChange</span>(symbol, price);
+        }
+    }
+}
+
+<span class="cm">// Concrete Observers — completely independent of each other</span>
+<span class="kw">public class</span> <span class="cl">AlertService</span> <span class="kw">implements</span> <span class="cl">StockObserver</span> {
+    <span class="kw">private final double</span> threshold;
+
+    <span class="kw">public</span> <span class="cl">AlertService</span>(<span class="kw">double</span> threshold) { <span class="kw">this</span>.threshold = threshold; }
+
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">onPriceChange</span>(<span class="cl">String</span> symbol, <span class="kw">double</span> price) {
+        <span class="kw">if</span> (price > threshold) {
+            <span class="cl">System</span>.out.<span class="fn">printf</span>(<span class="st">"🚨 ALERT: %s above threshold! Price: %.2f%n"</span>, symbol, price);
+        }
+    }
+}
+
+<span class="kw">public class</span> <span class="cl">TradingBot</span> <span class="kw">implements</span> <span class="cl">StockObserver</span> {
+    <span class="an">@Override</span>
+    <span class="kw">public void</span> <span class="fn">onPriceChange</span>(<span class="cl">String</span> symbol, <span class="kw">double</span> price) {
+        <span class="kw">if</span> (price &lt; <span class="nn">100.0</span>) {
+            <span class="cl">System</span>.out.<span class="fn">printf</span>(<span class="st">"🤖 BOT: Buying %s at %.2f%n"</span>, symbol, price);
+        }
+    }
+}
+
+<span class="cm">// Usage</span>
+<span class="kw">public class</span> <span class="cl">Main</span> {
+    <span class="kw">public static void</span> <span class="fn">main</span>(<span class="cl">String</span>[] args) {
+        <span class="cl">StockMarket</span> apple = <span class="kw">new</span> <span class="cl">StockMarket</span>(<span class="st">"AAPL"</span>, <span class="nn">150.0</span>);
+
+        apple.<span class="fn">subscribe</span>(<span class="kw">new</span> <span class="cl">AlertService</span>(<span class="nn">160.0</span>));
+        apple.<span class="fn">subscribe</span>(<span class="kw">new</span> <span class="cl">TradingBot</span>());
+
+        apple.<span class="fn">setPrice</span>(<span class="nn">165.0</span>);  <span class="cm">// Triggers alert</span>
+        apple.<span class="fn">setPrice</span>(<span class="nn">95.0</span>);   <span class="cm">// Triggers bot buy</span>
+    }
+}</pre>
+  </div>
+  <p><strong>Why CopyOnWriteArrayList?</strong> Observers might unsubscribe during notification (inside onPriceChange). Iterating over a regular ArrayList while modifying it throws ConcurrentModificationException. CopyOnWriteArrayList is safe for this pattern.</p>
+</div>
+
+<div class="content-block" id="sec-realworld">
+  <h2><span class="icon">🌐</span> Real-World Examples</h2>
+  <ul>
+    <li><strong>Java's java.util.Observable (deprecated) & EventListener:</strong> The original Observer implementation in JDK. Deprecated because Observable is a class, limiting single-inheritance.</li>
+    <li><strong>Spring ApplicationEvent & ApplicationListener:</strong> Spring's event system — publish events with applicationEventPublisher.publishEvent(), listen with @EventListener.</li>
+    <li><strong>RxJava Observable:</strong> The entire reactive programming model — Observable (Subject) + Observer with operators for transformation, filtering, and error handling.</li>
+    <li><strong>JavaScript DOM addEventListener:</strong> addEventListner('click', handler) is Observer — the DOM element is the Subject.</li>
+    <li><strong>Kafka / Event-Driven Architecture:</strong> At scale, Observer becomes publish-subscribe with a message broker (Kafka, RabbitMQ) as the Subject.</li>
+  </ul>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Java — Spring Boot Observer with @EventListener</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm">// Event (data class)</span>
+<span class="kw">public record</span> <span class="cl">OrderPlacedEvent</span>(<span class="cl">String</span> orderId, <span class="cl">String</span> customerId, <span class="kw">double</span> amount) {}
+
+<span class="cm">// Publisher (Subject)</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="cl">OrderService</span> {
+    <span class="an">@Autowired</span> <span class="kw">private</span> <span class="cl">ApplicationEventPublisher</span> publisher;
+
+    <span class="kw">public void</span> <span class="fn">placeOrder</span>(<span class="cl">Order</span> order) {
+        <span class="cm">// ... save order</span>
+        publisher.<span class="fn">publishEvent</span>(<span class="kw">new</span> <span class="cl">OrderPlacedEvent</span>(order.getId(), order.getCustomerId(), order.getTotal()));
+    }
+}
+
+<span class="cm">// Observer 1: send email</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cl">EmailNotificationListener</span> {
+    <span class="an">@EventListener</span>
+    <span class="kw">public void</span> <span class="fn">onOrderPlaced</span>(<span class="cl">OrderPlacedEvent</span> event) {
+        <span class="cm">// send confirmation email</span>
+    }
+}
+
+<span class="cm">// Observer 2: update inventory</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> <span class="cl">InventoryListener</span> {
+    <span class="an">@EventListener</span>
+    <span class="kw">public void</span> <span class="fn">onOrderPlaced</span>(<span class="cl">OrderPlacedEvent</span> event) {
+        <span class="cm">// reduce stock levels</span>
+    }
+}</pre>
+  </div>
+</div>
+
+<div class="content-block" id="sec-pitfalls">
+  <h2><span class="icon">⚠️</span> Pitfalls</h2>
+  <div class="warn-box">
+    <strong>⚠️ Memory Leaks:</strong> The most common Observer bug. If observers don't unsubscribe, the Subject holds a reference keeping them alive — even if nothing else refers to them. Always implement and call unsubscribe() in destructors or lifecycle methods.
+  </div>
+  <ul>
+    <li><strong>Observer ordering dependency:</strong> Observers should be independent. If Observer B depends on Observer A running first, you have a design problem — make it explicit with a Chain of Responsibility instead.</li>
+    <li><strong>Cascading updates:</strong> Observer A's update() triggers Subject B to notify, which triggers Observer C... infinite loops are possible. Add guards.</li>
+    <li><strong>Slow observers:</strong> If an observer does expensive work, it blocks notification of subsequent observers. Use async notification (CompletableFuture or @Async in Spring).</li>
+    <li><strong>Update storms:</strong> 1000 updates per second × 100 observers = 100,000 calls. Debounce or batch notifications for high-frequency events.</li>
+  </ul>
+</div>
+
+<div class="content-block" id="sec-exercises">
+  <h2><span class="icon">🏋️</span> Exercises</h2>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)"><span>🟢 Beginner: Weather Station</span></div>
+    <div class="exercise-body">
+      <p>Build a WeatherStation (Subject) that notifies three displays (CurrentConditionsDisplay, StatisticsDisplay, ForecastDisplay) when temperature, humidity, and pressure change. Classic Head First Design Patterns example.</p>
+    </div>
+  </div>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)"><span>🟡 Intermediate: Event Bus</span></div>
+    <div class="exercise-body">
+      <p>Build a generic EventBus where: publishers emit events by type, subscribers register for specific event types. Use generics. Support both synchronous and asynchronous (CompletableFuture) notification modes.</p>
+    </div>
+  </div>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)"><span>🔴 Advanced: Reactive Pipeline</span></div>
+    <div class="exercise-body">
+      <p>Using Java's Flow API (java.util.concurrent.Flow), implement a reactive price feed: StockPricePublisher implements Publisher, TradingEngine implements Subscriber, add a map operator to convert prices to profit/loss, and implement backpressure handling so a slow subscriber doesn't cause OOM.</p>
+    </div>
+  </div>
+</div>
+
+<div class="content-block" id="sec-interview">
+  <h2><span class="icon">💼</span> Interview Insight</h2>
+  <div class="tip-box">
+    <strong>🎯 System Design Connection:</strong><br>
+    "Design a notification system" → Observer at micro level, Kafka pub-sub at macro level.<br>
+    "How would you handle real-time updates in a web app?" → WebSockets + Observer pattern on the server.<br>
+    "Design an event-driven e-commerce system" → Describe Observer for domain events, explain eventual consistency.
+  </div>
+  <p><strong>Hot interview framing:</strong> <em>"At the component level, I'd use Observer for tight coupling between related components. At the service level, I'd use a message broker (Kafka/SQS) which is Observer at distributed scale — one producer, many consumer groups, decoupled, scalable, with replay."</em></p>
+</div>
+
+<div class="next-lesson" onclick="openLesson('strategy')">
+  <div><div class="next-label">Next Lesson</div><div class="next-title">Strategy Pattern →</div></div>
+  <span class="next-arrow">→</span>
+</div>`
+},
+
+strategy:{
+  sections:[
+    {id:'concept',title:'Concept'},
+    {id:'mental',title:'Mental Model'},
+    {id:'example',title:'Implementation'},
+    {id:'pitfalls',title:'Pitfalls'},
+    {id:'exercises',title:'Exercises'},
+    {id:'interview',title:'Interview Insight'},
+  ],
+  html:`
+<h1>Strategy Pattern</h1>
+<div class="lesson-meta-row">
+  <span class="difficulty diff-beginner">Beginner</span>
+  <span class="time-badge">⏱ 12 min read</span>
+  <span class="cat-badge cat-behavioral">Behavioral</span>
+</div>
+
+<div class="content-block" id="sec-concept">
+  <h2><span class="icon">💡</span> Concept</h2>
+  <p><strong>Intent:</strong> Define a family of algorithms, encapsulate each one, and make them interchangeable. Strategy lets the algorithm vary independently from the clients that use it.</p>
+  <p>The core problem it solves: you have an operation that needs to be done in multiple different ways, and the way might change at runtime. Without Strategy, you write a massive if-else or switch — brittle, violates OCP.</p>
+  <div class="analogy-box">
+    <strong>🗺️ Analogy:</strong> Google Maps has multiple route strategies: drive, walk, cycle, transit. The destination is the same, but the algorithm for getting there differs. You (the Context) can switch strategies at any time without Maps caring. Strategy is the pattern of "plug in any algorithm here."
+  </div>
+</div>
+
+<div class="content-block" id="sec-mental">
+  <h2><span class="icon">🧠</span> Mental Model</h2>
+  <div class="mental-model">
+    <h4>Composition over Inheritance</h4>
+    <p>Strategy is the canonical example of "favor composition over inheritance." Instead of subclassing to vary behavior, you inject a strategy object. The Context HAS-A Strategy, not IS-A Strategy.</p>
+    <p><strong>Key insight:</strong> Anything that feels like a giant switch/if-else over algorithm choice is a Strategy candidate. Payment methods, compression algorithms, sorting techniques, routing strategies, authentication mechanisms.</p>
+  </div>
+</div>
+
+<div class="content-block" id="sec-example">
+  <h2><span class="icon">⚡</span> Implementation — Payment System</h2>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Java — Strategy Pattern (E-commerce Payment)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm">// Strategy Interface — the contract all algorithms implement</span>
+<span class="kw">public interface</span> <span class="cl">PaymentStrategy</span> {
+    <span class="kw">boolean</span> <span class="fn">pay</span>(<span class="kw">double</span> amount);
+    <span class="cl">String</span> <span class="fn">getProviderName</span>();
+}
+
+<span class="cm">// Concrete Strategy 1: Credit Card</span>
+<span class="kw">public class</span> <span class="cl">CreditCardPayment</span> <span class="kw">implements</span> <span class="cl">PaymentStrategy</span> {
+    <span class="kw">private final</span> <span class="cl">String</span> cardNumber, cvv;
+
+    <span class="kw">public</span> <span class="cl">CreditCardPayment</span>(<span class="cl">String</span> cardNumber, <span class="cl">String</span> cvv) {
+        <span class="kw">this</span>.cardNumber = cardNumber;
+        <span class="kw">this</span>.cvv = cvv;
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public boolean</span> <span class="fn">pay</span>(<span class="kw">double</span> amount) {
+        <span class="cl">System</span>.out.<span class="fn">printf</span>(<span class="st">"💳 Charging $%.2f to card ending %s%n"</span>, amount, cardNumber.<span class="fn">substring</span>(<span class="nn">12</span>));
+        <span class="kw">return true</span>; <span class="cm">// call payment gateway</span>
+    }
+
+    <span class="an">@Override</span> <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getProviderName</span>() { <span class="kw">return</span> <span class="st">"Visa/MC"</span>; }
+}
+
+<span class="cm">// Concrete Strategy 2: PayPal</span>
+<span class="kw">public class</span> <span class="cl">PayPalPayment</span> <span class="kw">implements</span> <span class="cl">PaymentStrategy</span> {
+    <span class="kw">private final</span> <span class="cl">String</span> email;
+
+    <span class="kw">public</span> <span class="cl">PayPalPayment</span>(<span class="cl">String</span> email) { <span class="kw">this</span>.email = email; }
+
+    <span class="an">@Override</span>
+    <span class="kw">public boolean</span> <span class="fn">pay</span>(<span class="kw">double</span> amount) {
+        <span class="cl">System</span>.out.<span class="fn">printf</span>(<span class="st">"🅿️ PayPal: $%.2f charged to %s%n"</span>, amount, email);
+        <span class="kw">return true</span>;
+    }
+
+    <span class="an">@Override</span> <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getProviderName</span>() { <span class="kw">return</span> <span class="st">"PayPal"</span>; }
+}
+
+<span class="cm">// Concrete Strategy 3: Crypto</span>
+<span class="kw">public class</span> <span class="cl">CryptoPayment</span> <span class="kw">implements</span> <span class="cl">PaymentStrategy</span> {
+    <span class="kw">private final</span> <span class="cl">String</span> walletAddress;
+    <span class="kw">private final</span> <span class="cl">String</span> currency;
+
+    <span class="kw">public</span> <span class="cl">CryptoPayment</span>(<span class="cl">String</span> wallet, <span class="cl">String</span> currency) {
+        <span class="kw">this</span>.walletAddress = wallet; <span class="kw">this</span>.currency = currency;
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public boolean</span> <span class="fn">pay</span>(<span class="kw">double</span> amount) {
+        <span class="cl">System</span>.out.<span class="fn">printf</span>(<span class="st">"₿ Sending %.6f %s to %s%n"</span>, amount/30000, currency, walletAddress);
+        <span class="kw">return true</span>;
+    }
+
+    <span class="an">@Override</span> <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getProviderName</span>() { <span class="kw">return</span> currency; }
+}
+
+<span class="cm">// Context — uses a strategy, can swap at runtime</span>
+<span class="kw">public class</span> <span class="cl">ShoppingCart</span> {
+    <span class="kw">private</span> <span class="cl">PaymentStrategy</span> paymentStrategy;
+    <span class="kw">private</span> <span class="kw">double</span> total;
+
+    <span class="kw">public void</span> <span class="fn">setPaymentStrategy</span>(<span class="cl">PaymentStrategy</span> strategy) {
+        <span class="kw">this</span>.paymentStrategy = strategy;
+    }
+
+    <span class="kw">public boolean</span> <span class="fn">checkout</span>() {
+        <span class="kw">if</span> (paymentStrategy == <span class="kw">null</span>) <span class="kw">throw new</span> <span class="cl">IllegalStateException</span>(<span class="st">"No payment method selected"</span>);
+        <span class="cl">System</span>.out.<span class="fn">println</span>(<span class="st">"Paying via: "</span> + paymentStrategy.<span class="fn">getProviderName</span>());
+        <span class="kw">return</span> paymentStrategy.<span class="fn">pay</span>(total);
+    }
+}
+
+<span class="cm">// Usage — swap strategies at runtime</span>
+<span class="cl">ShoppingCart</span> cart = <span class="kw">new</span> <span class="cl">ShoppingCart</span>();
+cart.<span class="fn">setPaymentStrategy</span>(<span class="kw">new</span> <span class="cl">PayPalPayment</span>(<span class="st">"user@email.com"</span>));
+cart.<span class="fn">checkout</span>(); <span class="cm">// PayPal</span>
+
+<span class="cm">// User changes payment method — just swap the strategy</span>
+cart.<span class="fn">setPaymentStrategy</span>(<span class="kw">new</span> <span class="cl">CreditCardPayment</span>(<span class="st">"1234-5678-9012-3456"</span>, <span class="st">"123"</span>));
+cart.<span class="fn">checkout</span>(); <span class="cm">// Credit Card</span></pre>
+  </div>
+
+  <h3>Modern Java: Lambda Strategies</h3>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Java 8+ — Functional Strategy with Lambdas</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm">// @FunctionalInterface makes it a lambda target</span>
+<span class="an">@FunctionalInterface</span>
+<span class="kw">public interface</span> <span class="cl">SortStrategy</span>&lt;T&gt; {
+    <span class="kw">void</span> <span class="fn">sort</span>(<span class="cl">List</span>&lt;T&gt; list);
+}
+
+<span class="cm">// Context</span>
+<span class="kw">public class</span> <span class="cl">DataSorter</span>&lt;T&gt; {
+    <span class="kw">private</span> <span class="cl">SortStrategy</span>&lt;T&gt; strategy;
+
+    <span class="kw">public</span> <span class="cl">DataSorter</span>(<span class="cl">SortStrategy</span>&lt;T&gt; strategy) { <span class="kw">this</span>.strategy = strategy; }
+
+    <span class="kw">public void</span> <span class="fn">sort</span>(<span class="cl">List</span>&lt;T&gt; data) { strategy.<span class="fn">sort</span>(data); }
+}
+
+<span class="cm">// No need for concrete classes — use lambdas!</span>
+<span class="cl">DataSorter</span>&lt;<span class="cl">Integer</span>&gt; quickSorter = <span class="kw">new</span> <span class="cl">DataSorter</span>&lt;&gt;(list -> <span class="cl">Collections</span>.<span class="fn">sort</span>(list));
+<span class="cl">DataSorter</span>&lt;<span class="cl">String</span>&gt; reverseSorter = <span class="kw">new</span> <span class="cl">DataSorter</span>&lt;&gt;(list -> list.<span class="fn">sort</span>(<span class="cl">Comparator</span>.<span class="fn">reverseOrder</span>()));</pre>
+  </div>
+  <div class="tip-box"><strong>💡 Modern Java:</strong> With functional interfaces and lambdas, you often don't need concrete strategy classes for simple algorithms. The strategy <em>is</em> the lambda.</div>
+</div>
+
+<div class="content-block" id="sec-pitfalls">
+  <h2><span class="icon">⚠️</span> Pitfalls</h2>
+  <ul>
+    <li><strong>Over-engineering:</strong> If you only have one algorithm and it never changes, Strategy adds needless complexity. Apply it when variation IS the requirement.</li>
+    <li><strong>Context-strategy coupling:</strong> If a strategy needs too much context data to work, the interface becomes bloated. Consider whether the strategy truly is independent.</li>
+    <li><strong>Null strategy:</strong> Always validate that a strategy is set before calling it. Use a default strategy (Null Object Pattern) rather than null.</li>
+  </ul>
+</div>
+
+<div class="content-block" id="sec-exercises">
+  <h2><span class="icon">🏋️</span> Exercises</h2>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)"><span>🟢 Beginner: Compression Strategy</span></div>
+    <div class="exercise-body"><p>Build a FileCompressor with strategies: ZipStrategy, GzipStrategy, Bzip2Strategy. Each implements compress(byte[] data) → byte[]. The FileCompressor should work with any strategy.</p></div>
+  </div>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)"><span>🟡 Intermediate: Discount Engine</span></div>
+    <div class="exercise-body"><p>Build an order discount system: DiscountStrategy interface with calculate(Order order) → double. Implement: NoDiscount, PercentageDiscount, BuyOneGetOneDiscount, LoyaltyDiscount (based on customer points). A DiscountEngine selects the best strategy for the customer.</p></div>
+  </div>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)"><span>🔴 Advanced: Route Planner</span></div>
+    <div class="exercise-body"><p>Build a navigation system with strategies: DrivingStrategy, WalkingStrategy, CyclingStrategy, TransitStrategy. Each takes start/end coordinates and returns a Route object with: distance, estimatedTime, steps, cost. Add a StrategySelector that picks the best strategy based on distance, time of day, and user preferences.</p></div>
+  </div>
+</div>
+
+<div class="content-block" id="sec-interview">
+  <h2><span class="icon">💼</span> Interview Insight</h2>
+  <div class="tip-box">
+    <strong>🎯 Classic Strategy interview scenarios:</strong><br>
+    "Design a payment system" → Strategy for payment methods.<br>
+    "How would you implement sorting for different data types?" → Strategy for algorithms.<br>
+    "Design an authentication system" → Strategy for auth methods (JWT, OAuth, API key).<br>
+    "How do you avoid a 10,000 line switch statement?" → Strategy + a strategy registry/factory.
+  </div>
+  <p><strong>Strategy vs State pattern question:</strong> Both involve switching behavior. The difference: Strategy is about interchangeable algorithms chosen by the <em>client</em>. State is about an object's behavior changing based on its own <em>internal state</em>. In Strategy, the context doesn't change state; in State, transitions are managed internally.</p>
+</div>
+
+<div class="next-lesson" onclick="openLesson('command')">
+  <div><div class="next-label">Next Lesson</div><div class="next-title">Command Pattern →</div></div>
+  <span class="next-arrow">→</span>
+</div>`
+},
+
+decorator:{
+  sections:[
+    {id:'concept',title:'Concept'},
+    {id:'mental',title:'Mental Model'},
+    {id:'example',title:'Implementation'},
+    {id:'pitfalls',title:'Pitfalls'},
+    {id:'exercises',title:'Exercises'},
+    {id:'interview',title:'Interview Insight'},
+  ],
+  html:`
+<h1>Decorator Pattern</h1>
+<div class="lesson-meta-row">
+  <span class="difficulty diff-intermediate">Intermediate</span>
+  <span class="time-badge">⏱ 15 min read</span>
+  <span class="cat-badge cat-structural">Structural</span>
+</div>
+
+<div class="content-block" id="sec-concept">
+  <h2><span class="icon">💡</span> Concept</h2>
+  <p><strong>Intent:</strong> Attach additional responsibilities to an object dynamically. Decorators provide a flexible alternative to subclassing for extending functionality.</p>
+  <p>The problem: you have a class and need to add features to it. Subclassing is the naive approach — but if you need multiple combinations of features, you get a class explosion. Decorator wraps the object and adds behavior, allowing arbitrary stacking of features.</p>
+  <div class="analogy-box">
+    <strong>☕ Analogy:</strong> Ordering coffee at Starbucks. Start with Espresso ($2). Add Milk (+$0.50). Add Vanilla (+$0.25). Add Extra Shot (+$1.00). Each add-on decorates the previous drink — wrapping it and adding cost + flavor. You can combine them in any order. This is the Decorator pattern exactly.
+  </div>
+  <p>The critical insight: the Decorator <strong>implements the same interface as the component</strong> it decorates. So the client can't tell if it's talking to the original or a decorated version — they're interchangeable.</p>
+</div>
+
+<div class="content-block" id="sec-mental">
+  <h2><span class="icon">🧠</span> Mental Model</h2>
+  <div class="mental-model">
+    <h4>Russian Nesting Dolls</h4>
+    <p>Each decorator is a shell that holds the thing inside and adds something. The innermost is the real object. When you call a method, it ripples inward through all the shells, with each one adding its behavior before or after passing to the inner object.</p>
+    <p>Call chain: LoggingDecorator.execute() → CachingDecorator.execute() → AuthDecorator.execute() → RealService.execute()</p>
+  </div>
+</div>
+
+<div class="content-block" id="sec-example">
+  <h2><span class="icon">⚡</span> Implementation — Coffee Order System</h2>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Java — Decorator Pattern (Coffee Shop)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm">// Component Interface — what all coffees implement</span>
+<span class="kw">public interface</span> <span class="cl">Coffee</span> {
+    <span class="kw">double</span> <span class="fn">getCost</span>();
+    <span class="cl">String</span> <span class="fn">getDescription</span>();
+}
+
+<span class="cm">// Concrete Component — the base product</span>
+<span class="kw">public class</span> <span class="cl">Espresso</span> <span class="kw">implements</span> <span class="cl">Coffee</span> {
+    <span class="an">@Override</span> <span class="kw">public double</span> <span class="fn">getCost</span>() { <span class="kw">return</span> <span class="nn">2.00</span>; }
+    <span class="an">@Override</span> <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getDescription</span>() { <span class="kw">return</span> <span class="st">"Espresso"</span>; }
+}
+
+<span class="cm">// Abstract Decorator — same interface, wraps a Coffee</span>
+<span class="kw">public abstract class</span> <span class="cl">CoffeeDecorator</span> <span class="kw">implements</span> <span class="cl">Coffee</span> {
+    <span class="kw">protected final</span> <span class="cl">Coffee</span> decoratedCoffee;
+
+    <span class="kw">public</span> <span class="cl">CoffeeDecorator</span>(<span class="cl">Coffee</span> coffee) {
+        <span class="kw">this</span>.decoratedCoffee = coffee;
+    }
+
+    <span class="an">@Override</span>
+    <span class="kw">public double</span> <span class="fn">getCost</span>() { <span class="kw">return</span> decoratedCoffee.<span class="fn">getCost</span>(); }
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getDescription</span>() { <span class="kw">return</span> decoratedCoffee.<span class="fn">getDescription</span>(); }
+}
+
+<span class="cm">// Concrete Decorators — each adds one feature</span>
+<span class="kw">public class</span> <span class="cl">Milk</span> <span class="kw">extends</span> <span class="cl">CoffeeDecorator</span> {
+    <span class="kw">public</span> <span class="cl">Milk</span>(<span class="cl">Coffee</span> coffee) { <span class="kw">super</span>(coffee); }
+
+    <span class="an">@Override</span>
+    <span class="kw">public double</span> <span class="fn">getCost</span>() { <span class="kw">return</span> <span class="kw">super</span>.<span class="fn">getCost</span>() + <span class="nn">0.50</span>; }
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getDescription</span>() { <span class="kw">return</span> <span class="kw">super</span>.<span class="fn">getDescription</span>() + <span class="st">", Milk"</span>; }
+}
+
+<span class="kw">public class</span> <span class="cl">Vanilla</span> <span class="kw">extends</span> <span class="cl">CoffeeDecorator</span> {
+    <span class="kw">public</span> <span class="cl">Vanilla</span>(<span class="cl">Coffee</span> coffee) { <span class="kw">super</span>(coffee); }
+
+    <span class="an">@Override</span>
+    <span class="kw">public double</span> <span class="fn">getCost</span>() { <span class="kw">return</span> <span class="kw">super</span>.<span class="fn">getCost</span>() + <span class="nn">0.25</span>; }
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getDescription</span>() { <span class="kw">return</span> <span class="kw">super</span>.<span class="fn">getDescription</span>() + <span class="st">", Vanilla"</span>; }
+}
+
+<span class="kw">public class</span> <span class="cl">ExtraShot</span> <span class="kw">extends</span> <span class="cl">CoffeeDecorator</span> {
+    <span class="kw">public</span> <span class="cl">ExtraShot</span>(<span class="cl">Coffee</span> coffee) { <span class="kw">super</span>(coffee); }
+
+    <span class="an">@Override</span>
+    <span class="kw">public double</span> <span class="fn">getCost</span>() { <span class="kw">return</span> <span class="kw">super</span>.<span class="fn">getCost</span>() + <span class="nn">1.00</span>; }
+
+    <span class="an">@Override</span>
+    <span class="kw">public</span> <span class="cl">String</span> <span class="fn">getDescription</span>() { <span class="kw">return</span> <span class="kw">super</span>.<span class="fn">getDescription</span>() + <span class="st">", Extra Shot"</span>; }
+}
+
+<span class="cm">// Usage — compose arbitrarily</span>
+<span class="cl">Coffee</span> order = <span class="kw">new</span> <span class="cl">ExtraShot</span>(<span class="kw">new</span> <span class="cl">Vanilla</span>(<span class="kw">new</span> <span class="cl">Milk</span>(<span class="kw">new</span> <span class="cl">Espresso</span>())));
+<span class="cl">System</span>.out.<span class="fn">println</span>(order.<span class="fn">getDescription</span>()); <span class="cm">// Espresso, Milk, Vanilla, Extra Shot</span>
+<span class="cl">System</span>.out.<span class="fn">printf</span>(<span class="st">"$%.2f%n"</span>, order.<span class="fn">getCost</span>());     <span class="cm">// $3.75</span></pre>
+  </div>
+
+  <h3>Java I/O: The Original Decorator</h3>
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">Java — I/O Streams as Decorators</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <pre><span class="cm">// This IS the Decorator pattern — built into Java I/O</span>
+<span class="cl">InputStream</span> raw = <span class="kw">new</span> <span class="cl">FileInputStream</span>(<span class="st">"data.txt"</span>);         <span class="cm">// Component</span>
+<span class="cl">InputStream</span> buffered = <span class="kw">new</span> <span class="cl">BufferedInputStream</span>(raw);        <span class="cm">// Decorator: buffering</span>
+<span class="cl">InputStream</span> compressed = <span class="kw">new</span> <span class="cl">GZIPInputStream</span>(buffered);    <span class="cm">// Decorator: decompression</span>
+<span class="cl">DataInputStream</span> typed = <span class="kw">new</span> <span class="cl">DataInputStream</span>(compressed);  <span class="cm">// Decorator: typed reads</span>
+
+<span class="cm">// Each decorator added a feature, all behind the same InputStream interface</span>
+<span class="kw">int</span> value = typed.<span class="fn">readInt</span>();</pre>
+  </div>
+</div>
+
+<div class="content-block" id="sec-pitfalls">
+  <h2><span class="icon">⚠️</span> Pitfalls</h2>
+  <ul>
+    <li><strong>Order matters:</strong> Decorator(A, Decorator(B, C)) may not equal Decorator(B, Decorator(A, C)). Be explicit about composition order.</li>
+    <li><strong>Too many tiny classes:</strong> Decorator can lead to systems with dozens of small classes. Good if each is focused; problematic if they're redundant.</li>
+    <li><strong>Identity comparison breaks:</strong> <code>instanceof</code> or <code>equals()</code> checks on the original type break when wrapped. The client only sees the decorator.</li>
+    <li><strong>Deep stacks:</strong> A 10-layer deep decorator chain can be hard to debug. A stack trace traversing 10 <code>getCost()</code> calls is confusing.</li>
+  </ul>
+</div>
+
+<div class="content-block" id="sec-exercises">
+  <h2><span class="icon">🏋️</span> Exercises</h2>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)"><span>🟢 Beginner: Text Formatter</span></div>
+    <div class="exercise-body"><p>Build a TextFormatter interface with format(String text) → String. Create: UpperCaseDecorator, TrimDecorator, HtmlEscapeDecorator, PrefixDecorator(">>"), SuffixDecorator. Show composing them in different orders.</p></div>
+  </div>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)"><span>🟡 Intermediate: HTTP Request Middleware</span></div>
+    <div class="exercise-body"><p>Build an HttpHandler interface with handle(HttpRequest) → HttpResponse. Decorators: AuthenticationDecorator (validates token), LoggingDecorator (logs request/response), RateLimitingDecorator (rejects if over limit), CachingDecorator (returns cached response if available). Chain them in the right order.</p></div>
+  </div>
+  <div class="exercise-block">
+    <div class="exercise-header" onclick="toggleEx(this)"><span>🔴 Advanced: Data Source Decorator</span></div>
+    <div class="exercise-body"><p>Build a DataSource interface with readData()/writeData() → String. Decorators: EncryptionDecorator (AES encrypt on write, decrypt on read), CompressionDecorator (GZIP compress on write, decompress on read), ValidationDecorator (validates schema). Compose: Validation → Encryption → Compression → FileDataSource. Verify roundtrip.</p></div>
+  </div>
+</div>
+
+<div class="content-block" id="sec-interview">
+  <h2><span class="icon">💼</span> Interview Insight</h2>
+  <div class="tip-box">
+    <strong>🎯 Interview Hooks:</strong><br>
+    "How does Java I/O work?" → Decorator pattern — every wrapper is a decorator.<br>
+    "How would you add logging to an existing service without modifying it?" → Decorator (or Proxy).<br>
+    "What's the difference between Decorator and Proxy?" → Decorator adds behavior; Proxy controls access. Proxy usually manages the lifecycle of the real subject; Decorator assumes the subject exists.
+  </div>
+</div>
+
+<div class="next-lesson" onclick="openLesson('facade')">
+  <div><div class="next-label">Next Lesson</div><div class="next-title">Facade Pattern →</div></div>
+  <span class="next-arrow">→</span>
+</div>`
+},
+
+});
+
+// =============================================
+// UTILS
+// =============================================
+function toggleEx(header) {
+  const body = header.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+function copyCode(btn) {
+  const pre = btn.closest('.code-wrap').querySelector('pre');
+  const text = pre.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+// =============================================
+// INIT
+// =============================================
+renderCurriculum();
+renderCheatSheet();
+initQuiz();
+</script>
+</body>
+</html>
